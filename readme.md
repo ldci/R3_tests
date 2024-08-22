@@ -27,4 +27,6 @@ This extension is not necessary for testing R3 images, hut highly recommanded (s
 As I learn more about Rebol 3, I'll be adding different examples as I go along, so that you can benefit from them.
 
 
+Preferred way to report issues is using the [issues repository](https://github.com/ldci/R3_tests/issues).
+
 
