@@ -1,0 +1,4 @@
+Code is developed under macOS (Sonoma 14.6.1) on ARM M1 processor.
+If openCV extension is not installed, set opencv? to no in samples.
+If opencv?: no, result images are saved in the directory.
+Then adapt call/shell "open image.png" to your os.
