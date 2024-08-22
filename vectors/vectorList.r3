@@ -4,6 +4,7 @@ REBOL [
 
 ;--les data du vecteurs sont sous la forme d'un bloc
 ;--on doit donc pouvoir utiliser les mêmes operateurs
+;--Oldes's comment: when you construct a vector using the make method, you don't have to use the length integer.
 
 ;--short syntax
 {vec: #(double! [
@@ -14,7 +15,7 @@ REBOL [
 )
 }
 
-vec: make vector! [decimal! 64 9 [0.1 0.9 0.0 0.3 0.0 0.7 0.1 0.1 0.8]]
+vec: make vector! [decimal! 64 [0.1 0.9 0.0 0.3 0.0 0.7 0.1 0.1 0.8]]
 comment [
 ;--for red
 	vec: make vector! [float! 64 9 [ 0.1 0.9 0.0 0.3 0.0 0.7 0.1 0.1 0.8]]

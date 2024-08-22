@@ -1,6 +1,7 @@
 #!/usr/local/bin/r3
 REBOL [
 ]
+;--Oldes's comment: when you construct a vector using the make method, you don't have to use the length integer.
 
 ;-- VECTOR can be initialized using a block with CHARs
 ;--R3 uses integer! or byte! datatype for char!
@@ -41,12 +42,12 @@ probe v: make vector! [float! 64 5]											;--OK
 
 ;--Randomize vector
 ;--r3
-probe v1: make vector! [integer! 32 5 [1 2 3 4 5]]							;--OK
+probe v1: make vector! [integer! 32  [1 2 3 4 5]]							;--OK
 probe v2: random v1															;--OK
 
 comment [
 ;--Red
-probe v1: make vector! [integer! 32 5 [1 2 3 4 5]]							;--OK
+probe v1: make vector! [integer! 32 [1 2 3 4 5]]							;--OK
 probe v2: random v1															;--OK
 ]	
 
@@ -64,7 +65,7 @@ probe v: make vector! compose [float! 32 (b)]								;--not OK
 ]
 
 probe #(double! 4)
-probe make vector! [decimal! 64 4 [0.0 0.0 0.0 0.0]]
+probe make vector! [decimal! 64 [0.0 0.0 0.0 0.0]]
 probe #(byte! 4) 
 
 n: 5

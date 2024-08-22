@@ -75,6 +75,9 @@ lbsScalar: func [
 	_v
 ]
 
+;--Oldes's comment: when you construct a vector using the make method, you don't have to use the length integer.
+
+
 print "Basic Scalar"
 v: make vector! [integer! 32 [7 13 42 108]]
 print ["v     :" v]
@@ -85,7 +88,7 @@ print ["v / 4 :" v / 4]
 print lf
 
 print "Scalar functions"
-v: make vector! [integer! 32 4 [1 2 3 4]]
+v: make vector! [integer! 32 [1 2 3 4]]
 print ["v      :" v]
 print ["Rem    :" remScalar v 2]
 print ["And    :" andScalar v 1]
@@ -94,7 +97,7 @@ print ["Xor    :" xorScalar v 1]
 print lf
 
 print "lbsScalar function tests"
-v: make vector! [integer! 32 4 [1 2 3 4]]
+v: make vector! [integer! 32 [1 2 3 4]]
 print ["v      :" v]
 print ["%      :" lbsScalar v 2 'rem]
 print ["And    :" lbsScalar v 1 'and]

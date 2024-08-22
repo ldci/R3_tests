@@ -158,11 +158,11 @@ leftShiftVectors: func [
 	v
 ]
 
-
+;--Oldes's comment: when you construct a vector using the make method, you don't have to use the length integer.
 print-horizontal-line
 print "Vectors"
-v1: make vector! [integer! 32 4 [1 2 3 4]]
-v2: make vector! [integer! 32 4 [5 6 7 8]]
+v1: make vector! [integer! 32 [1 2 3 4]]
+v2: make vector! [integer! 32 [5 6 7 8]]
 
 print ["v1 :" v1]
 print ["v2 :" v2]

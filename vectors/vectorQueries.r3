@@ -4,8 +4,8 @@ REBOL [
 ;--"QUERY on vector"
 ;--when vector is created, these properties are public
 ;--see t-vector.c
-
-v: make vector! [unsigned integer! 16 4 [1 2 3 4]]
+;--Oldes's comment: when you construct a vector using the make method, you don't have to use the length integer.
+v: make vector! [unsigned integer! 16 [1 2 3 4]]
 probe v
 print ["Type:   " v/type]
 print ["Size:   " v/size]

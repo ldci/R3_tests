@@ -18,6 +18,7 @@ y: make vector! [2 3 4 5]
 x + y
 ]
 
+;--Oldes comment: when you construct a vector using the make method, you don't have to use the length integer.
 ;--Rebol R3
 probe make vector! 10
 ;probe make vector! [char! 16 10] ;--not supported so use 8-bit integer
@@ -27,9 +28,11 @@ probe make vector! [decimal! 64 10]
 probe make vector! [float! [1.0 2.0 3.0 4.0]]
 probe make vector! [integer! 8  [1 2 3 4]]
 probe make vector! [integer! 32 [1 2 3 4]]  
-probe make vector! [float! 4 [1 2 3 4]]
+probe make vector! [float! [1 2 3 4]]
 probe make vector! [decimal! 64 [1 2 3 4]]
 
+; equal? #(int64! [1 2 3 4]) make vector! [integer! 64 [1 2 3 4]]  
+;== #(true)
 
 probe vec: #(double! [
     	0.1 0.9 0.0 
