@@ -53,37 +53,24 @@ russianPeasant: function [
 
 print-horizontal-line
 print "First function"
-print ["Expected:" 18 * 2]
-print ["Expected:" 18 * 2]
-print ["Expected:" 20 * 13]
-print ["Result  :" _multiply 20 13]
-print ["Expected:" -20 * 13]
-print ["Result	:" _multiply -20 13]
-print ["Expected:" -20 * -13]
-print ["Result  :" _multiply -20 -13]
+
+print ["Expected:" 20 * 13 "Result:" _multiply 20 13]
+print ["Expected:" -20 * 13 "Result:" _multiply -20 13]
+print ["Expected:" -20 * -13 "Result:" _multiply -20 -13]
 
 print-horizontal-line
 print "Second function"
-print ["Expected:" 18 * 2]
-print ["Expected:" 18 * 2]
-print ["Expected:" 20 * 13]
-print ["Result  :" __multiply 20 13]
-print ["Expected:" -20 * 13]
-print ["Result  :" __multiply -20 13]
-print ["Expected:" -20 * -13]
-print ["Result  :" __multiply -20 -13]
+print ["Expected:" 20 * 13 "Result:" __multiply 20 13]
+print ["Expected:" -20 * 13 "Result:"__multiply -20 13]
+print ["Expected:" -20 * -13 "Result:" __multiply -20 -13]
 
 
 print-horizontal-line
 print "Russian Peasant"
-print ["Expected:" 18 * 2]
-print ["Result  :" russianPeasant 18 2]
-print ["Expected:" 20 * 13]
-print ["Result  :" russianPeasant 20 13]
-print ["Expected:" -20 * 13]
-print ["Result  :" russianPeasant -20 13]
-print ["Expected:" -20 * -13]
-print ["Result  :" russianPeasant -20 -13]
+print ["Expected:" 18 * 2 "Result:" russianPeasant 18 2]
+print ["Expected:" 20 * 13 "Result:"russianPeasant 20 13]
+print ["Expected:" -20 * 13 "Result:" russianPeasant -20 13]
+print ["Expected:" -20 * -13 "Result  :" russianPeasant -20 -13]
 print-horizontal-line
 
 
