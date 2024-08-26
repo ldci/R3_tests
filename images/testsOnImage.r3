@@ -21,7 +21,7 @@ cv/imshow/name imc "Copy" cv/waitkey delay
 ;--To extract part of an image as a separate image
 imcp: copy/part im1 220x200							
 cv/imshow/name imcp "Copy/part"	
-cv/moveWindow "Copy/part" 260x4
+;cv/moveWindow "Copy/part" 260x4
 cv/waitkey delay
 
 ;--Use the indexing functions to set the position of the COPY
@@ -82,12 +82,21 @@ cv/imshow/name im3 "Append" cv/waitkey delay
 im1: make image! reduce [256x256 black]
 repeat i 256 [
 	p: as-pair i 128
-	poke im1 p green
+	poke im1 p white
 ]
+;--or with change
+change/dup at im1 1x118 blue 256x1
+change/dup at im1 1x138 red 256x1
+
+change/dup at im1 118x1 blue 1x256
+change/dup at im1 128x1 white 1x256
+change/dup at im1 138x1 red 1x256
 
 cv/imshow/name im1 "Poke"  
 cv/waitkey 0
 cv/destroyAllWindows
+
+
 
 ;--ANDing, ORing, and XORing Images not supported in R3
 ;--but supported by OpenCV extension
