@@ -39,33 +39,27 @@ normalizeSignal: func [v [vector!]
 ]
 
 
-generateImage: func [v [vector!] img [image!] scale [decimal!]
+generateImage: func [v [vector!] img [image!] scale [decimal!] offset [integer!]
 ][
 	repeat i v/length [
-		y: (v/:i * scale)
-		p: as-pair i y change/dup at img p red 4x4
+		y: offset - (v/:i * scale)
+		p: as-pair i y change/dup at img p green 4x4
 	]
 	img
 ]
 
-generateNormalizedImage: func [v [vector!] img [image!]
-][
-	repeat i v/length [
-		y: 100 - (v/:i * 10.0)
-		p: as-pair i y change/dup at img p blue 4x4]
-	img
-]
-
+;********************* Test program **********************
 
 vec: make vector! compose [decimal! 64 (x)]
 vec: vectRandom vec 120
-bm1: make image! reduce [size snow 200]
-bm2: make image! reduce [size snow 200]
+bm1: make image! reduce [size black 200]
+bm2: make image! reduce [size black 200]
 
 vec2: detrendSignal vec
 vec3: normalizeSignal vec2
-generateImage vec bm1 100.0
-generateNormalizedImage vec3 bm2 
+generateImage vec bm1 100.0 0
+generateImage vec bm2 10.0 100
+
 
 if opencv? [
 	;--OpenCV extension for Rebol3

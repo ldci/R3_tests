@@ -83,7 +83,6 @@ data-inp: [1 1.1 1 1 0.9 1 1 1.1 1 1 1 1 1.1 0.9 1 1.1 1 1 0.9
      3 2.6 4 3 3.2 2 1 1 0.8 4 4 2 2.5 1 1 1 1 1 1.1 1 0.9 1 1 1.1 1 0.9 
      1 1.1 1 1 0.9 1 1 1.1 1 1 1.1 1 0.9 1 1 1.1 1 1 1.1 1 0.9 1 1 1.1 1 0.9]
 
-
 sampleLenght: length? data-inp
 ;--allocated buffer used to collect the peaks..
 data-out: array/initial sampleLenght 0
@@ -94,19 +93,19 @@ filtered: zThresholding :data-inp :data-out :lag :threshold :influence
 print ["Input: " data-inp]
 print ["Output:" data-out]
 
-bm1: make image! reduce [100x100 black 200]
-bm2: make image! reduce [100x100 black 200]
+bm1: make image! reduce [100x100 black]
+bm2: make image! reduce [100x100 black]
 
 generateImage data-inp bm1
 generateImage data-out bm2 
 
 if opencv? [
 	cv: import opencv
-	bm: cv/resize bm1 600x200
+	bm: cv/resize  :bm1 600x200
 	cv/imshow/name :bm "Noisy Signal"
-	bm: cv/resize bm2 600x200
+	bm: cv/resize  :bm2 600x200
 	cv/imshow/name :bm "Z-score Filter"
-	cv/moveWindow "Z-score Filter" 0x200
+	cv/moveWindow "Z-score Filter" 0x180
 	cv/waitkey 0
 ]
 
