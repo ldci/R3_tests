@@ -1,0 +1,55 @@
+make vector! comparaisons
+;--Oldes's comment: when you construct a vector using the make method, 
+;--you don't have to use the length integer (R3).
+ 
+make vector! <slots>
+make vector! [<values>]
+make vector! [<type> <bit-size> [<values>]]
+make vector! [<type> <bit-size> <slots> [<values>]]
+<slots>    : number of slots to preallocate (32-bit slots by default)
+<values>   : sequence of values of same datatype
+<type>     : name of accepted datatype: integer! | char! | float!				;--Red	
+<type>     : name of accepted datatype: integer! | byte! | decimal!				;--R3
+<bit-size> : 8 | 16 | 32 for integer! and char!, 32 | 64 for float!				;--Red
+<bit-size> : 8 | 16 | 32 | 64 for integer!, 8 for byte!, 32 | 64 for decimal!	;--R3
+
+some samples:
+n: 10 
+probe v: make vector! 10 (a 32-bit integer vector) 			;--R3 and Red
+probe v: make vector! [char! 16 10] 						;--Red
+probe v: make vector! [byte! 10]							;--R3
+probe v: make vector! [integer! 8]							;--R3
+probe v: make vector! [integer! 8 10]						;--R3 and Red
+probe v: make vector! [float! 64 10]						;--Red
+probe v: make vector! [decimal! 64 10]						;--R3
+probe v: make vector! [1.0 2.0 3.0 4.0]						;--Red
+probe v: make vector! [float! [1.0 2.0 3.0 4.0]]			;--R3
+probe v: make vector! [integer! 8 [1 2 3 4]]				;--R3 and Red
+probe v: make vector! [integer! 16 4 [1 2 3 4]]				;--R3 and Red
+probe v: make vector! [integer! 32 4 [1 2 3 4]]				;--R3 and Red
+probe v: make vector! [integer! 64 [1 2 3 4]] 				;--R3
+probe v: make vector! [float! 32 [1.0 2.0 3.0 4.0]]			;--Red
+probe v: make vector! [float! 32 4 [1.0 2.0 3.0 4.0]]		;--Red
+probe v: make vector! [decimal! 32 [1.0 2.0 3.0 4.0]]		;--R3
+probe v: make vector! [decimal! 32 4 [1.0 2.0 3.0 4.0]]		;--R3	
+probe v: make vector! reduce n								;--R3 and Red	
+probe v: make vector! compose [float! 64 (n)]				;--Red							
+probe v: make vector! compose [decimal! 64 (n)]				;--R3
+probe v: make vector! compose [double! (n)]					;--R3
+probe v: make vector! compose [f32! (n)]					;--R3
+probe v: make vector! compose [f64! (n)]					;--R3	
+probe v: make vector! [integer! 16 #{010002000300}]			;--R3
+b: to binary! make vector! [decimal! 32 [1.0 -1.0]]			;--R3
+probe v: make vector! compose [decimal! 32 (b)]				;--R3
+probe v: #(double! [0.1 0.9 0.0 0.3 0.0 0.7 0.1 0.1 0.8])	;--R3
+probe v1: make vector! [integer! 32 [1 2 3 4 5]]			;--R3 and Red
+probe v2: random v1											;--R3 and Red			
+random b: [0 1 2 3 4 5 6 7 8 9]								;--R3 and Red
+v: make vector! reduce length? b							;--R3 and Red
+repeat i length? b [v/:i: b/:i]								;--R3 and Red
+probe v														;--R3 and Red
+
+;--Compact construction syntax for R3 see compact.r3 for more samples
+prin "i32!: "  probe v: make vector! compose [i32! (n)]
+prin "f64!: "  probe v: make vector! compose [f64! (n)]
+

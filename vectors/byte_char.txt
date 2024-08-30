@@ -1,0 +1,29 @@
+R3: byte!: 8bit only
+probe v: make vector! [byte! 8] 
+== make vector! [unsigned integer! 8 8 [0 0 0 0 0 0 0 0]]
+
+probe v: make vector! [byte! [#"^(00)" #"^(01)" #"^(02)" #"a" #"b" #"ÿ"]]
+;== make vector! [unsigned integer! 8 6 [0 1 2 97 98 255]]
+
+char!: 8bit and 16bit 
+probe v: make vector! [char! 8]
+== cannot MAKE #(vector!) from: [char! 8]
+
+probe v: make vector! [char! 8 8]
+== cannot MAKE #(vector!) from: [char! 8 8]
+
+probe v: make vector! [char! 16 [#"^(00)" #"^(01)" #"^(02)" #"a" #"b" #"ÿ"]]
+== cannot MAKE #(vector!) from: [char! 16 [#"^@" #"^A" #"^B" #"a" #"b" #"ÿ"]]
+
+Red: char!: 8, 16 and 32bit
+probe v: make vector! [char! 8 8]
+== make vector! [char! 8 [#"^@" #"^@" #"^@" #"^@" #"^@" #"^@" #"^@" #"^@"]]
+
+probe v: make vector! [char! 8 [#"^(00)" #"^(01)" #"^(02)" #"a" #"b" #"ÿ"]]
+== make vector! [char! 8 [#"^@" #"^A" #"^B" #"a" #"b" #"ÿ"]]
+
+probe v: make vector! [char! 16 [#"^(00)" #"^(01)" #"^(02)" #"a" #"b" #"ÿ"]]
+== make vector! [char! 16 [#"^@" #"^A" #"^B" #"a" #"b" #"ÿ"]]
+
+probe v: make vector! [char! 32 [#"^(00)" #"^(01)" #"^(02)" #"a" #"b" #"ÿ"]]
+== make vector! [#"^@" #"^A" #"^B" #"a" #"b" #"ÿ"]
