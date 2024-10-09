@@ -14,5 +14,5 @@ repeat i cTotal [
 ]
 
 estimatedPI: 4.0 * (cInside / cTotal)
-print ["PI by Monte Carlo estilation =" round/to estimatedPI 0.00001]
+print ["PI by Monte Carlo estimation =" round/to estimatedPI 0.00001]
 print ["Rebol 3 pi value             =" round/to pi 0.00001]
