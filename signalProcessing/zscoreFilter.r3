@@ -33,18 +33,18 @@ zThresholding: function [
 	threshold [decimal!]
 	influence [decimal!]
 ][
-	sLenght: length? data
+	sLength: length? data
 	
 	;; NOTE: these filteredY, avgFilter and stdFilter should be reused in real life usage!
 	
 	filteredY: copy data
-	avgFilter: array/initial sLenght 0.0
-	stdFilter: array/initial sLenght 0.0
+	avgFilter: array/initial sLength 0.0
+	stdFilter: array/initial sLength 0.0
 	
 	avgFilter/:lag: mean data lag
 	stdFilter/:lag: stdDev data lag
 	i: lag
-	while [i < sLenght][
+	while [i < sLength][
 		n:   i + 1          ;; index of the next value
 		y:   data/:n
 		avg: avgFilter/:i
