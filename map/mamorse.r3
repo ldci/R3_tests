@@ -4,72 +4,8 @@ REBOL [
 ;--We use minidaudio extension (https://github.com/Oldes/Rebol-MiniAudio)
 ;--Thanks to Oldes for his help
 
-mCode: make map! [
-#"A"	".-"
-#"B"	"-..."
-#"C"	"-.-."
-#"D"	"-.."
-#"E"	"."
-#"F"	"..-."
-#"G"	"--."
-#"H"	"...."
-#"I"	".."
-#"J"	".---"
-#"K"	"-.-"
-#"L"	".-.."
-#"M"	"--"
-#"N"	"-."
-#"O"	"---"
-#"P"	".--."
-#"Q"	"--.-"
-#"R"	".-."
-#"S"	"..."
-#"T"	"-"
-#"U"	"..-"
-#"V"	"...-"
-#"W"	".--"
-#"X"	"-..-"
-#"Y"	"-.--"
-#"Z"	"--.."
-#"0"	"-----"
-#"1"	"·----"
-#"2" 	"··---"
-#"3"	"···--"
-#"4"	"····-"
-#"5"	"·····"
-#"6"	"-····"
-#"7"	"--···"
-#"8"	"---··"
-#"9"	"----·"
-#"."	".-.-.-"
-#"," 	"--..--"
-#":" 	"---..."
-#"'"	".----."
-#"("	"-.--."
-#")" 	"-.--.-"
-#"?"	"..--.."
-#"@"	".--.-."
-#"^""	"-.--.-"
-#"=" 	"-.--.-"
-#"+" 	".-.-."
-#"-"	"-....-"
-#"/"	"-..-."
-#"x"	"-..-"
-]
-
-;--for abreviations strings
-mShortCuts: make map! [
-"BOT"	"-.-.-"				;--begin transmission
-"EOT"	"...-.-"			;--end transmission 
-"I2T"	"-.-"				;--invitation to transmit
-"WFT"	".-..."				;--waiting for response
-"VVV"	"···—···—···—"		;--transmission test
-"ERR" 	"........"			;--transmission error
-"OK"	"...-.-"			;--understood
-]
-
-audio: import miniaudio
-
+do %mcodes.r3										;--load morse codes
+audio: import miniaudio								;--import miniaudio extension
 dot: 	0.1											;--for dot beep
 dash: 	dot * 3										;--for dash beep
 
@@ -103,14 +39,16 @@ sendCode: func [
 ]
 
 ;********************* Test program ********************
+print-horizontal-line
 print "Begin transmission"
 sendCode "BOT" 
-print ""
-str: "sos to Oldes"
+print-horizontal-line
+str: "sos Oldes"
 sendCode str
-print ""
+print-horizontal-line
 print rejoin ["Message " str " sent"]
-print ""
+print-horizontal-line
 sendCode "OK"
 print "Message received"
 release device
+print-horizontal-line

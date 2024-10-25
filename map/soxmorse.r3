@@ -6,70 +6,7 @@ REBOL [
 ;--and http://sox.sourceforge.net/sox.html
 ;--eg: play -n synth 0.2 sine 700
 
-mCode: make map! [
-#"A"	".-"
-#"B"	"-..."
-#"C"	"-.-."
-#"D"	"-.."
-#"E"	"."
-#"F"	"..-."
-#"G"	"--."
-#"H"	"...."
-#"I"	".."
-#"J"	".---"
-#"K"	"-.-"
-#"L"	".-.."
-#"M"	"--"
-#"N"	"-."
-#"O"	"---"
-#"P"	".--."
-#"Q"	"--.-"
-#"R"	".-."
-#"S"	"..."
-#"T"	"-"
-#"U"	"..-"
-#"V"	"...-"
-#"W"	".--"
-#"X"	"-..-"
-#"Y"	"-.--"
-#"Z"	"--.."
-#"0"	"-----"
-#"1"	"·----"
-#"2" 	"··---"
-#"3"	"···--"
-#"4"	"····-"
-#"5"	"·····"
-#"6"	"-····"
-#"7"	"--···"
-#"8"	"---··"
-#"9"	"----·"
-#"."	".-.-.-"
-#"," 	"--..--"
-#":" 	"---..."
-#"'"	".----."
-#"("	"-.--."
-#")" 	"-.--.-"
-#"?"	"..--.."
-#"@"	".--.-."
-#"^""	"-.--.-"
-#"=" 	"-.--.-"
-#"+" 	".-.-."
-#"-"	"-....-"
-#"/"	"-..-."
-#"x"	"-..-"
-]
-
-;--for abreviations strings
-mShortCuts: make map! [
-"BOT"	"-.-.-"				;--begin transmission
-"EOT"	"...-.-"			;--end transmission 
-"I2T"	"-.-"				;--invitation to transmit
-"WFT"	".-..."				;--waiting for response
-"VVV"	"···—···—···—"		;--transmission test
-"ERR" 	"........"			;--transmission error
-"OK"	"...-.-"			;--understood
-]
-
+do %mcodes.r3				;--load morse codes
 dot: 	0.1 				;--for dot beep
 dash: 	dot * 3				;--for dash beep
 
@@ -95,7 +32,9 @@ sendCode: func [
 ]
 
 ;********************* Test program ********************
+print-horizontal-line
 str: "SOS REBOL TEAM"
 sendCode str
-print ""
+print-horizontal-line
 print rejoin ["Message " str " sent"]
+print-horizontal-line
