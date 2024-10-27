@@ -48,7 +48,7 @@ print c: decodeMorseString "..." append msg c	;--S
 print c: decodeMorseString "---" append msg c	;--O
 print c: decodeMorseString "..." append msg c	;--S
 print-horizontal-line
-ret: rejoin ["Hello Captain, message received is " msg "! What can we do?"]
+ret: rejoin ["Hello Captain Oldes, message received is " msg "! What can we do?"]
 print ret 
 speak/say/as ret 15
 print-horizontal-line
