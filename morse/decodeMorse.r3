@@ -17,6 +17,7 @@ decodeMorseString: function [code [string!]
 	char: cblock/(index? find mblock code)
 ]
 
+;print decodeMorseString "..."
 foreach v mblock [print [v "=" decodeMorseString v]]
 
 

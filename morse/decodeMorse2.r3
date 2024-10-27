@@ -30,12 +30,14 @@ foreach [key value] mCode [
 	append mblock value		;--strings (morse code)
 ]
 
-decodeMorseString: function [code [string!]
+decodeMorseString: func [code [string!]
 ][
 	foreach v code [
+		prin v
 		either v = #"." [beep dot][beep dash]
 		wait dot 		;--delay between codes inside the string
 	]
+	prin " "
 	wait dot * 6		;--delay before a new string
 	char: cblock/(index? find mblock code)
 ]
@@ -50,7 +52,7 @@ print c: decodeMorseString "..." append msg c	;--S
 print-horizontal-line
 ret: rejoin ["Hello Captain Oldes, message received is " msg "! What can we do?"]
 print ret 
-speak/say/as ret 15
+speak/say/as ret 15	;--english voice
 print-horizontal-line
 
 

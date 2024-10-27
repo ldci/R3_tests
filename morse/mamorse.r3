@@ -24,7 +24,7 @@ with audio [
 ]
 
 ;--send morse code for each letter in the string
-sendCode: func [
+sendMorseCode: func [
 	str	[string!]
 ][
 	foreach c uppercase str [
@@ -41,14 +41,14 @@ sendCode: func [
 ;********************* Test program ********************
 print-horizontal-line
 print "Begin transmission"
-sendCode "BOT" 
+sendMorseCode "BOT" 
 print-horizontal-line
 str: "sos Oldes"
-sendCode str
+sendMorseCode str
 print-horizontal-line
 print rejoin ["Message " str " sent"]
 print-horizontal-line
-sendCode "OK"
+sendMorseCode "OK"
 print "Message received"
 release device
 print-horizontal-line
