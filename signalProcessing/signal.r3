@@ -1,72 +1,87 @@
 #!/usr/local/bin/r3
 REBOL [ 
 ]
-random/seed now/time/precise
+
+b2d: import 'blend2d					;--use blend2d (draw module)
 opencv?: yes
-x: 1000 ;-- 1 sec
+if opencv? [cv: import opencv]			;--OpenCV extension for Rebol3
+random/seed now/time/precise
+
+x: 1000 								;-- 1 sec (1kHz)
 y: 200
-size: as-pair x y
+size: as-pair x y 						;--images size
 
 vectRandom: func [v [vector!] value [number!]
 ][
-	repeat i v/length [v/:i: 280 - random value]
+	repeat i v/length [v/:i: random value]
 	v
 ]
 
 
-mean: function [v [vector!] return: [decimal!]][ (sum v) / (v/length)]
-
+;mean: function [v [vector!] return: [decimal!]][ (sum v) / (v/length)]
+;--use standard R3 average function
+;--sum and average are supported by Red
 stddev: function [v [vector!] return: [decimal!]][
-	average: mean v
+	_average: average v
 	sigma: 0.0
-	foreach value v [sigma: sigma + (power (value - average) 2)]
+	foreach value v [sigma: sigma + (power (value - _average) 2)]
 	sqrt sigma / ((v/length) - 1)
 ]
 
 detrendSignal: func [v [vector!]
 ][
-	average: mean v
-	repeat i v/length [v/:i: v/:i - average]
+	_average: average v
+	repeat i v/length [v/:i: v/:i - _average]
 	v
 ]
 
 normalizeSignal: func [v [vector!]
 ][
-	average: mean v
+	_average: average v
 	std: stddev v
-	repeat i v/length [v/:i: v/:i - average / std]
+	repeat i v/length [v/:i: v/:i - _average / std]
 	v
 ]
 
 
-generateImage: func [v [vector!] img [image!] scale [decimal!] offset [integer!]
+generateImage: func [
+	v 		[vector!] 
+	img 	[image!] 
+	scale 	[decimal!]
+	color 	[tuple!]
 ][
+	code: copy [
+		pen 0.0.0.100									;--blend2d commands
+		line-width 1									;--blend2d commands
+		line											;--blend2d commands
+	]	
 	repeat i v/length [
-		y: offset - (v/:i * scale)
-		p: as-pair i y change/dup at img p green 4x4
+		y: 100 - (v/:i * scale)
+		p: as-pair i y 
+		change/dup at img p color 2x2
+		append code p
 	]
+	draw img :code
 	img
 ]
 
-;********************* Test program **********************
 
-vec: make vector! compose [decimal! 64 (x)]
-vec: vectRandom vec 120
-bm1: make image! reduce [size black 200]
-bm2: make image! reduce [size black 200]
+;********************** Main program *************************
 
-vec2: detrendSignal vec
-vec3: normalizeSignal vec2
-generateImage vec bm1 100.0 0
-generateImage vec bm2 10.0 100
+bm1: make image! reduce [size snow 200]			;--image 1
+bm2: make image! reduce [size snow 200]			;--image 2
 
+vec1: make vector! compose [decimal! 64 (x)]	;--1000 values
+vec1: vectRandom vec1 100						;--0..100 
+vec2: detrendSignal vec1						;--detrend random signal
+vec3: normalizeSignal vec2						;--normalize detrended signal
+generateImage vec1 bm1 50.0 navy				;--original signal
+generateImage vec3 bm2 10.0 red					;--filtered signal
 
 if opencv? [
-	;--OpenCV extension for Rebol3
-	cv: import opencv
 	cv/imshow/name :bm1 "Random Signal"
 	cv/imshow/name :bm2 "Normalized Signal"
-	cv/moveWindow "Normalized Signal" 0x200
+	cv/moveWindow "Normalized Signal" 0x190
 	print "Any key to close"
 	cv/waitkey 0
 ]
