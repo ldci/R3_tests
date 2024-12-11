@@ -72,11 +72,8 @@ generateImage: func [
 	color 	[tuple!]
 	scale	[decimal!]
 ][
-	code: copy [
-		pen color										;--blend2d commands
-		line-width 1									;--blend2d commands
-		line											;--blend2d commands
-	]	
+	;--blend2d commands
+	code: copy [pen color line-width 1 line]
 	repeat i length? v [
 		p: as-pair (i * 10) (90 - (v/:i * scale)) 
 		append code p

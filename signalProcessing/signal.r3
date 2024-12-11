@@ -3,7 +3,7 @@ REBOL [
 ]
 
 b2d: import 'blend2d					;--use blend2d (draw module)
-opencv?: yes
+opencv?: yes							;--use OpenCV module?
 if opencv? [cv: import opencv]			;--OpenCV extension for Rebol3
 random/seed now/time/precise
 
@@ -22,24 +22,22 @@ vectRandom: func [v [vector!] value [number!]
 ;--use standard R3 average function
 ;--sum and average are supported by Red
 stddev: function [v [vector!] return: [decimal!]][
-	_average: average v
 	sigma: 0.0
-	foreach value v [sigma: sigma + (power (value - _average) 2)]
+	foreach value v [sigma: sigma + (power (value - average v) 2)]
 	sqrt sigma / ((v/length) - 1)
 ]
 
 detrendSignal: func [v [vector!]
 ][
-	_average: average v
-	repeat i v/length [v/:i: v/:i - _average]
+	repeat i v/length [v/:i: v/:i - average v]
 	v
 ]
 
 normalizeSignal: func [v [vector!]
 ][
 	_average: average v
-	std: stddev v
-	repeat i v/length [v/:i: v/:i - _average / std]
+	_std: stddev v
+	repeat i v/length [v/:i: v/:i - _average / _std]
 	v
 ]
 
@@ -50,17 +48,9 @@ generateImage: func [
 	scale 	[decimal!]
 	color 	[tuple!]
 ][
-	code: copy [
-		pen 0.0.0.100									;--blend2d commands
-		line-width 1									;--blend2d commands
-		line											;--blend2d commands
-	]	
-	repeat i v/length [
-		y: 100 - (v/:i * scale)
-		p: as-pair i y 
-		change/dup at img p color 2x2
-		append code p
-	]
+	;--blend2d commands
+	code: copy [pen color line-width 1 line]
+	repeat i v/length [append code as-pair i 100 - (v/:i * scale)]
 	draw img :code
 	img
 ]
