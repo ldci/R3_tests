@@ -2,7 +2,7 @@
 REBOL [ 
 ]
 
-do %wavelet.r3
+do %fwavelet.r3
 
 signal: make vector! [float! [7.0 1.0 6.0 -6.0 1.0 -5.0 4.0 2.0 -3.0 8.0]]
 n: to-integer log-2 length? signal ;--we need a 2^N integer value

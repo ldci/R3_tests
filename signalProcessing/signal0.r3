@@ -13,8 +13,9 @@ size: as-pair x y 						;--images size
 
 vectRandom: func [v [vector!] value [number!]
 ][
-	repeat i v/length [v/:i: random value]
-	v
+	_v: copy v
+	repeat i _v/length [_v/:i: random value]
+	_v
 ]
 
 
@@ -29,16 +30,18 @@ stddev: function [v [vector!] return: [decimal!]][
 
 detrendSignal: func [v [vector!]
 ][
-	repeat i v/length [v/:i: v/:i - average v]
-	v
+	_v: copy v
+	repeat i _v/length [_v/:i: _v/:i - average _v]
+	_v
 ]
 
 normalizeSignal: func [v [vector!]
 ][
-	_average: average v
-	_std: stddev v
-	repeat i v/length [v/:i: v/:i - _average / _std]
-	v
+	_v: copy v
+	_average: average _v
+	_std: stddev _v
+	repeat i _v/length [_v/:i: _v/:i - _average / _std]
+	_v
 ]
 
 
@@ -58,16 +61,20 @@ generateImage: func [
 
 ;********************** Main program *************************
 
-bm1: make image! reduce [size snow 200]			;--image 1
-bm2: make image! reduce [size snow 200]			;--image 2
+bm1: make image! reduce [size snow]			;--image 1
+bm2: make image! reduce [size snow]			;--image 2
 
-vec1: make vector! compose [decimal! 64 (x)]	;--1000 values
-vec1: vectRandom vec1 100						;--0..100 
+;vec0: make vector! compose [f64! (x)]
+vec0: make vector! compose [decimal! 64 (x)]	;--1000 values
+
+vec1: vectRandom vec0 100.0						;--0..100 
 vec2: detrendSignal vec1						;--detrend random signal
 vec3: normalizeSignal vec2						;--normalize detrended signal
-generateImage vec1 bm1 50.0 navy				;--original signal
+generateImage vec1 bm1 0.75 navy				;--original signal
 generateImage vec3 bm2 10.0 red					;--filtered signal
-
+print [vec1/1 vec2/1 vec3/1 ] 
+print vec1 == vec2
+print vec2 == vec3
 if opencv? [
 	cv/imshow/name :bm1 "Random Signal"
 	cv/imshow/name :bm2 "Normalized Signal"

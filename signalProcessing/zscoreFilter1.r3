@@ -1,8 +1,10 @@
 #!/usr/local/bin/r3
 Rebol [
-	title: "Peak signal detection in realtime timeseries data"
+	title: "Peak signal detection in timeseries data"
 	note: https://stackoverflow.com/questions/22583391/peak-signal-detection-in-realtime-timeseries-data
 ]
+opencv?: yes
+if opencv? [cv: import 'opencv]
 
 ;--Thanks to Oldes for corrections in zThresholding function
 
@@ -27,8 +29,8 @@ stdDev: function [
 ]
 
 zThresholding: function [
-	data      [block!]
-	output    [block!]
+	data      [block! vector!]
+	output    [block! vector!]
 	lag       [integer!]
 	threshold [decimal!]
 	influence [decimal!]
@@ -38,8 +40,11 @@ zThresholding: function [
 	;; NOTE: these filteredY, avgFilter and stdFilter should be reused in real life usage!
 	
 	filteredY: copy data
-	avgFilter: array/initial sLength 0.0
-	stdFilter: array/initial sLength 0.0
+	;avgFilter: array/initial sLength 0.0
+	;stdFilter: array/initial sLength 0.0
+	
+	avgFilter: make vector! reduce ['decimal! 64 sLength]
+	stdFilter: make vector! reduce ['decimal! 64 sLength]
 	
 	avgFilter/:lag: mean data lag
 	stdFilter/:lag: stdDev data lag
@@ -62,21 +67,23 @@ zThresholding: function [
 		avgFilter/:n: mean   (at filteredY i - lag) lag
 		stdFilter/:n: stdDev (at filteredY i - lag) lag
 		;print [i "avg:" avgFilter/:n "signal:" output/:n]
-		++ i
+		i: i + 1
 	]
 	filteredY
 ]
 
 generateImage: func [v [block!] img [image!] color [tuple!]
 ][
-	repeat i length? v [p: as-pair i 50 - (v/:i * 10) change at img p color]
+	repeat i length? v [
+		p: as-pair i 50 - (v/:i * 10) 
+		change at img p color
+	]
 	img
 ]
 
 lag: 25
 threshold: 5.0
 influence: 0.0
-opencv?: yes
 
 data-inp: [1 1.1 1 1 0.9 1 1 1.1 1 1 1 1 1.1 0.9 1 1.1 1 1 0.9
      1 1.1 1 1 1.1 1 0.8 0.9 1 1.2 0.9 1 1 1.1 1.2 1 1.5 1 3 2 5 3 2 1 1 1 0.9 1 1 
@@ -85,6 +92,7 @@ data-inp: [1 1.1 1 1 0.9 1 1 1.1 1 1 1 1 1.1 0.9 1 1.1 1 1 0.9
 
 
 sampleLenght: length? data-inp
+print sampleLenght
 ;--allocated buffer used to collect the peaks..
 data-out: array/initial sampleLenght 0
 
@@ -102,7 +110,6 @@ generateImage data-inp bm1 green
 generateImage data-out bm2 red
 
 if opencv? [
-	cv: import 'opencv
 	bm: cv/resize bm1 600x200
 	cv/imshow/name :bm "Noisy Signal"
 	bm: cv/resize bm2 600x200
