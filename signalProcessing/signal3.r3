@@ -6,7 +6,7 @@ b2d: import 'blend2d					;--use blend2d (draw module)
 opencv?: yes							;--use OpenCV module?
 if opencv? [cv: import opencv]			;--OpenCV extension for Rebol3
 random/seed now/time/precise			;--for random values
-x: 1000 								;-- 1 sec (1kHz)
+x: 1000 								;--1 sec (1 kHz)
 y: 100									;--for image size/y
 size: as-pair x y 						;--images size
 
@@ -39,19 +39,12 @@ vec1: vectRandom vec0 100						;--0..100
 vec2: detrendSignal vec1						;--detrend random signal
 vec3: normalizeSignal vec2
 vec4: minMaxNormalization vec2					;--normalize detrended signal
-med: median vec2								;--median value
-IQR: interquartileRange vec2					;--interquartile Range
 vec5: medianFilter vec2							;--median filter
 generateImage vec1 bm1 0.3 navy					;--original signal
 generateImage vec2 bm2 0.3 red					;--detrended signal
 generateImage vec3 bm3 10.0 green				;--normalized signal
 generateImage vec4 bm4 25.0 purple				;--min-max signal
 generateImage vec5 bm5 30.0 black				;--median filter
-
-;print ["vec1:" vec1/minimum vec1/maximum]
-;print ["vec2:" vec2/minimum vec2/maximum]
-;print ["vec3:" vec3/minimum vec3/maximum]
-;print ["vec4:" vec4/minimum vec4/maximum]
 
 if opencv? [
 	cv/imshow/name :bm1 "Random Signal"

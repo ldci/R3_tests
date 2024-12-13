@@ -36,8 +36,6 @@ vec0: make vector! compose [decimal! 64 (x)]	;--1000 values
 
 vec1: vectRandom vec0 100						;--0..100 
 vec2: detrendSignal vec1						;--detrend random signal
-med: median vec1								;--median value
-IQR: interquartileRange vec1					;--interquartile Range
 vec3: medianFilter vec1							;--median filter
 generateImage vec1 bm1 0.5 navy					;--original signal
 generateImage vec2 bm2 0.5 red					;--detrended signal

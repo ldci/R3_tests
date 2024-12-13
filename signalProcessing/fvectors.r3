@@ -42,7 +42,7 @@ interquartileRange: func [
     Q3: 0.75 * n		;--(3 / 4)
     Q3 - Q1
 ]
-;;--Hiiambors solution for median
+;;--Hiiamboris solution for median
 _median: function [
 	"Return the sample median"
 	sample [block! hash! vector!]
@@ -57,7 +57,7 @@ _median: function [
 ]
 
 detrendSignal: func [v [vector!]
-"Remove continuous componentin signal"
+"Remove continuous component in signal"
 ][
 	_v: copy v
 	repeat i _v/length [_v/:i: _v/:i - average _v]
@@ -67,7 +67,7 @@ detrendSignal: func [v [vector!]
 normalizeSignal: func [v [vector!]
 "Z-score algorithm"
 ][
-	;--use z-Score algorithm (x - m / standard deviation)
+	;--use z-Score algorithm (x - mean / standard deviation)
 	_v: copy v
 	_average: average _v
 	_std: stddev _v
@@ -80,16 +80,17 @@ minMaxNormalization: func [v [vector!]
 ][
 	;-- use  min-max algorithm (x: x - min / xmax - xmin)
 	_v: copy v
-	xmin: v/minimum xmax: v/maximum
-	
+	xmin: _v/minimum xmax: _v/maximum
 	repeat i _v/length [ _v/:i: (_v/:i - xmin) / (xmax - xmin)]
 	_v
 ]
 
-medianFilter: func [v [block! vector!]
+medianFilter: func [v [vector!]
 "Median filter"
 ][
 	_v: copy v
+	med: median _v
+	IQR: interquartileRange _v
 	repeat i _v/length [_v/:i: (_v/:i - med) / IQR]
 	_v
 ]
