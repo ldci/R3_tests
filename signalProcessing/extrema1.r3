@@ -1,5 +1,6 @@
 #!/usr/local/bin/r3
 REBOL [ 
+	needs: 3.18.1
 ]
 
 imgSize: 1024x128
@@ -47,12 +48,12 @@ rcvTSdifferentiate: function [
 	while [i < n] [
 		y-: signal/(i - 1) y: signal/:i y+: signal/(i + 1)
 		x-: i * deltaT - deltaT x: i * deltaT  x+: i * deltaT + deltaT
-		average: factor * (((y+ - y) / (x+ - x)) + ((y - y-) / (x - x-)))
-		filter/:i: average
+		_average: factor * (((y+ - y) / (x+ - x)) + ((y - y-) / (x - x-)))
+		filter/:i: _average
 		++ i
 	]
 	filter/1: filter/2		;--first point
-	filter/:n: average		;--last point
+	filter/:n: _average		;--last point
 	filter
 ]
 

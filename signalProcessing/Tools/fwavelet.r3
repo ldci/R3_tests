@@ -1,5 +1,6 @@
 #!/usr/local/bin/r3
 REBOL [ 
+	needs: 3.18.1
 ]
 ;--thanks to http://home.base.be/epm6604b/index.html for the C Code and details
 

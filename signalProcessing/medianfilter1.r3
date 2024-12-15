@@ -1,12 +1,13 @@
 #!/usr/local/bin/r3
 REBOL [ 
+	needs: 3.18.1
 ]
-do %fvectors.r3							;--function for vectors
+do %Tools/fvectors.r3							;--function for vectors
 b2d: import 'blend2d					;--use blend2d (draw module)
 opencv?: yes							;--use OpenCV module?
 if opencv? [cv: import opencv]			;--OpenCV extension for Rebol3
 random/seed now/time/precise			;--for random values
-x: 1000 								;-- 1 sec (1kHz)
+x: 1000 								;-- 1 sec (1 kHz)
 y: 100									;--for image size/y
 size: as-pair x y 						;--images size
 
