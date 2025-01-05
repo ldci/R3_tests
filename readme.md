@@ -12,14 +12,18 @@ A very mature version of Rebol 3, maintained by Oldes, a talented developer.
 [https://github.com/Siskin-framework/Builder
 ](https://github.com/Siskin-framework/Builder)
 
-A fabulous based command line utility useful for compilation of various projects, including compiling R3 form sources.
+A fabulous based command line utility useful for compilation of various projects, including compiling R3 from sources.
 
 [https://github.com/Oldes/Rebol-OpenCV
 ](https://github.com/Oldes/Rebol-OpenCV)
 
 OpenCV extension if you want to play with images processing.
 
-This extension is not necessary for testing R3 images, hut highly recommanded (see /images folder for detail).
+This extension is not necessary for testing R3 images, but highly recommanded (see /images folder for detail).
+
+[https://github.com/Oldes/Rebol3-Blend2D](https://github.com/Oldes/Rebol3-Blend2D)
+
+Blend2D extension is similar to Red Draw dialect and is very useful for drawing images.
 
 
 ### Just for tests 
