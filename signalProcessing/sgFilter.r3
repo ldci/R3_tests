@@ -87,33 +87,36 @@ SGFiltering: func [
 	filter 		[vector!]
 	kernel		[block!]
 ][
-	sLength: length? signal			;--signal size
-	kLength: (length? kernel) - 1	;--kernel size without the last value (normalisation)
-	nl: nr: kLength / 2				;--split kernel into 2 parts (left and right)
-	fsumCoef: last kernel 			;--normalisation value in the table 
-	sglength: nl + nr + 1			;--filter size
-	signal: signal * 1.0			;--we use float matrices
-	filter: filter * 1.0			;--we use float matrices 
-	i: nl							;--skip nl values
+	sLength: length? signal				;--signal size
+	kLength: (length? kernel) - 1		;--kernel size without the last value (normalisation)
+	nl: nr:  to integer! kLength / 2	;--split kernel into 2 parts (left and right)
+	fsumCoef: last kernel 				;--normalisation value in kernel table 
+	sglength: nl + nr + 1				;--filter size
+	signal: signal * 1.0				;--we use float matrices
+	filter: filter * 1.0				;--we use float matrices 
+	i: nl								;--skip nl values (extreme points are ignored)
 	;--start filter
-	while [i <= (slength - nr)] [
+	while [i <= (slength - nr)] [	
+		;--until signal upper limit
 		sg: sigma: 0.0
     	n: 1
+    	;--use kernel for filter
     	while [n < sglength][
-    		val: signal/(i - nl + n)
-    		coef: kernel/:n
-    		sigma: sigma + (val * coef)
+    		val: signal/(i - nl + n)	;--get signal value
+    		coef: kernel/:n				;--get coefficient value in the kernel
+    		sigma: sigma + (val * coef)	;--calculate the sum
     		++ n
     	]
-		sg: sigma / fsumCoef		;--SG filter value
-		if i = nl [val2: sg] 		;--for replacing first nl values
-		filter/:i: sg
+		sg: sigma / fsumCoef			;--SG filter value
+		if i = nl [val2: sg] 			;--for replacing extreme points
+		filter/:i: sg					;--store calculated value in filter vector
 		++ i
 	]
-	
-	;--update first nl values
+	;--update extreme values (not really required, for a better visualization)
 	i: 1
 	while [i <= nl] [filter/:i: val2 ++ i]
+	i: round slength - nr
+	while [i <= slength] [filter/:i: val2 ++ i]
 ]
 
 
@@ -234,13 +237,14 @@ generateImage: func [
 	v 		[vector!] 
 	img 	[image!] 
 	scale 	[decimal!]
+	cyValue	[integer!]
 	color 	[tuple!]
 ][
+	i: 0
 	;--blend2d commands
-	code: copy [pen color line-width 1 line line 0x64 1024x64 line]
-	repeat i v/length [append code as-pair i 32 + (v/:i * scale)]
-	draw img :code
-	img
+	plot: copy [pen white line-width 1 line 0x64 1024x64 pen color line]
+	forall v [append plot as-pair i cyValue + (v/1 * scale) ++ i]
+	draw img :plot 
 ]
 
 ;--test program
@@ -254,19 +258,19 @@ vec0: make vector! compose [decimal! 64 (x)]
 vec1: make vector! compose [decimal! 64 (x)]
 vec2: make vector! compose [decimal! 64 (x)]
 repeat i vec0/length [vec0/:i: random y / 2]
-
-
-bm0: make image! reduce [size snow]
-bm1: make image! reduce [size snow]
-bm2: make image! reduce [size snow]
-
 opSG: 5 ;--13 points
-SGFilter vec0 vec1 opSG
-SGDerivative vec0 vec2 opSG
+tt: dt [
+	bm0: make image! reduce [size black]
+	bm1: make image! reduce [size black]
+	bm2: make image! reduce [size black]
+	SGFilter vec0 vec1 opSG
+	SGDerivative vec0 vec2 opSG
+	generateImage vec0 bm0 1.0 32 green
+	generateImage vec1 bm1 1.0 32 red
+	generateImage vec2 bm2 5.0 64 yellow
+]
 
-generateImage vec0 bm0 1.0 navy
-generateImage vec1 bm1 1.0 red
-generateImage vec2 bm2 2.0 purple
+print rejoin [third tt * 1000 " ms"]
 
 cv/imshow/name :bm0 "Random Signal"
 cv/imshow/name :bm1 "Savitzky-Golay filter"
