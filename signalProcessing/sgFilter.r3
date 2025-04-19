@@ -270,7 +270,7 @@ tt: dt [
 	generateImage vec2 bm2 5.0 64 yellow
 ]
 
-print rejoin [third tt * 1000 " ms"]
+print rejoin [round third tt * 1000 " ms"]
 
 cv/imshow/name :bm0 "Random Signal"
 cv/imshow/name :bm1 "Savitzky-Golay filter"
