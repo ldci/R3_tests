@@ -1,0 +1,55 @@
+https://www.w3schools.com/js/js_json_intro.asp
+JSON syntax is derived from JavaScript object notation syntax:
+Data is in name/value pairs
+Data is separated by commas 
+Curly braces hold objects    {"name":"John", "age":30, "car":null}
+Square brackets hold arrays '["Ford", "BMW", "Fiat"]'
+
+Arrays in objects
+{
+"name":"John",
+"age":30,
+"cars":["Ford", "BMW", "Fiat"]
+}
+
+In JSON, values must be one of the following data types:
+a string
+a number
+an object
+an array
+a boolean
+null
+
+REBOL 3
+system/codecs/json
+make object! [
+    name: 'json
+    type: 'text
+    title: "JavaScript Object Notation"
+    suffixes: [%.json]
+    encode: make function! [[data [any-type!]][
+        to-json data
+    ]]
+    decode: make function! [[text [string! binary! file!]][
+        if file? text [text: read text]
+        if binary? text [text: to string! text]
+        load-json text
+    ]]
+]
+
+Red
+put system/codecs 'json context [
+    Title:     "JSON codec"
+    Name:      'JSON
+    Mime-Type: [application/json]
+    Suffixes:  [%.json]
+    encode: func [data [any-type!] where [file! url! none!]] [
+        to-json data
+    ]
+    decode: func [text [string! binary! file!]] [
+        if file? text [text: read text]
+        if binary? text [text: to string! text]
+        load-json text
+    ]
+]
+
