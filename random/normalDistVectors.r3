@@ -9,17 +9,9 @@ REBOL [
 
 RAND_MAX: 2147483647 ;--max integer value 
 NMAX: 500000
-;--2 useful functions in R3: sum and average
-mean: function [values [block! vector!] 
-][
-	sigma: 0.0
-	foreach v values [sigma: sigma + v]
-	sigma / (length? values)
-]
 
-stddev: function [values [block! vector!] 
+stddev: function [values [vector!] 
 ][
-	;mu: mean values		;--Red
 	mu: average values		;--mean native R3 function 
 	sigma: 0.0
 	foreach v values [sigma: sigma + ((v - mu) * (v - mu))]
@@ -27,7 +19,7 @@ stddev: function [values [block! vector!]
 ]
 
 ;--Normal random numbers generator - Marsaglia algorithm.
-gaussian: does [
+gaussian: function [] [
 	rsq: 0.0
 	while [any [(rsq >= 1.0) (rsq == 0.0)]][
 		x: (2.0 * random RAND_MAX) / RAND_MAX - 1.0
@@ -41,31 +33,31 @@ gaussian: does [
 ;--Generate 2 independent series of random values (0.0 1.0)
 generate: function [n [integer!] 
 ] [
-	;m: n + (n % 2)
-	m: n + n 
-	values: []
+	m: n + n
+	values: make vector! compose [f64! (m)]
 	i: 1
 	while [i <= m] [
-        append values gaussian 
+        values/(i): first gaussian 
+        values/(i + 1): second gaussian
 		i: i + 2
 	]
 	values
 ]
 ;--Show histogram
-printHistogram: function [values [block! vector!]] [
+printHistogram: function [values [vector!]] [
 	width: 50.0
 	low: -3.0
 	high: 3.0
 	delta: 0.1
+	maxi: 0
 	n: length? values							;--length of block
 	nbins: to integer! ((high - low) / delta)	;--number of classes in histogram (60)
-	bins: array/initial nbins 0					;--classes array with 0 
+	bins: make vector! compose [u32! (nbins)]	;--bins vector								
 	repeat i n [
 		j: to integer! ((values/:i - low) / delta)
 		if all [(j >= 1) (j <= nbins)] [bins/:j: bins/:j + 1] 	;--inc bins counter
 	]
-	;repeat j nbins [if maxi < bins/:j [maxi: bins/:j]]			;--get maximal value
-	maxi: first find-max bins
+	maxi: bins/maximum											;--get maximal value
 	repeat j nbins [
 		lbin: round/to (low + j * delta - high + 0.25) 0.01		;--low limit for the classe
 		hbin: round/to (low + j + 1 * delta - high + 0.25) 0.01	;--high limit for the classe
@@ -86,7 +78,7 @@ t: dt [
 	printHistogram values
 ]
 print-horizontal-line
-print [NMAX * 2 "Values processed in:" round/to third t 0.01 "sec"]
+print [ NMAX * 2 "Values processed in:"  round/to third t 0.01 "sec"]
 print  ["Mean: " round abs average values]
 print  ["STD : " round stddev values]
 print-horizontal-line

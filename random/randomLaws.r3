@@ -32,12 +32,7 @@ randFloat: function [
 ;********************************************
 
 ;
-randGaussian: function [
-"generate a Gaussian random variable with mean  and standard deviation"
-	mean 	[decimal!] 
-	stdev 	[decimal!] 
-	/x /y 
-][
+randGaussian: does [
 	rsq: 0.0
 	while [any [(rsq >= 1.0) (rsq == 0.0)]][
 		x: (2.0 * random RAND_MAX) / RAND_MAX - 1.0
@@ -45,11 +40,7 @@ randGaussian: function [
 		rsq: (x * x) + (y * y) 
 	]
 	f: sqrt ((-2.0 * log-e rsq) / rsq)
-	;return:[decimal!]
-	case [
-		x [return mean + x * f * stdev]
-		y [return mean + y * f * stdev]
-	]
+	reduce [x * f y * f]
 ]
 
 
@@ -85,7 +76,7 @@ randLognorm: function [a [decimal!] b [decimal!] z [decimal!]] [
 ]	
 
 ; gamma law (e.g 1 1.0)
-randGamma: func [k [integer!] l [decimal!]] [
+randGamma: function [k [integer!] l [decimal!]] [
 	r: 0.0
 	i: 0
 	while [i < k] [
