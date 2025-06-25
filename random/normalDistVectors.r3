@@ -5,6 +5,7 @@ REBOL [
 {
  * Based on RosettaCode example: Statistics/Normal distribution
  * Adapted from C. Rebol and Red are one-based.
+ * With vectors.
 }
 
 RAND_MAX: 2147483647 ;--max integer value 
@@ -19,27 +20,21 @@ stddev: function [values [vector!]
 ]
 
 ;--Normal random numbers generator - Marsaglia algorithm.
-gaussian: function [] [
-	rsq: 0.0
-	while [any [(rsq >= 1.0) (rsq == 0.0)]][
-		x: (2.0 * random RAND_MAX) / RAND_MAX - 1.0
-		y: (2.0 * random RAND_MAX) / RAND_MAX - 1.0
-		rsq: (x * x) + (y * y) 
-	]
-	f: sqrt ((-2.0 * log-e rsq) / rsq)
-	reduce [x * f y * f]
-]
-
-;--Generate 2 independent series of random values (0.0 1.0)
+;--Generates 2 independent series of random values [-1.0 1.0]
 generate: function [n [integer!] 
-] [
+][
 	m: n + n
 	values: make vector! compose [f64! (m)]
-	i: 1
-	while [i <= m] [
-        values/(i): first gaussian 
-        values/(i + 1): second gaussian
-		i: i + 2
+	for i 1 m 2 [
+        rsq: 0.0
+		while [any [(rsq >= 1.0) (rsq == 0.0)]][
+			x: (2.0 * random RAND_MAX) / RAND_MAX - 1.0
+			y: (2.0 * random RAND_MAX) / RAND_MAX - 1.0
+			rsq: (x * x) + (y * y) 
+		]
+		f: sqrt ((-2.0 * log-e rsq) / rsq)
+		values/(i): x * f
+		values/(i + 1): y * f
 	]
 	values
 ]
@@ -49,10 +44,9 @@ printHistogram: function [values [vector!]] [
 	low: -3.0
 	high: 3.0
 	delta: 0.1
-	maxi: 0
 	n: length? values							;--length of block
-	nbins: to integer! ((high - low) / delta)	;--number of classes in histogram (60)
-	bins: make vector! compose [u32! (nbins)]	;--bins vector								
+	nbins: to integer! ((high - low) / delta)	;--number of bins in histogram (60)
+	bins: make vector! compose [i32! (nbins)]	;--bins vector								
 	repeat i n [
 		j: to integer! ((values/:i - low) / delta)
 		if all [(j >= 1) (j <= nbins)] [bins/:j: bins/:j + 1] 	;--inc bins counter
