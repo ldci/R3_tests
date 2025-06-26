@@ -29,20 +29,31 @@ median: function [
 ]
 
 variance: function [
-	"Calculates the variance or the standard deviation of a series"
+	"Calculates the variance of a series"
 	values [block! vector!] 
-	/std
 ][
-	mu: mean values			;--Red
-	;mu: average values		;--mean native R3 function 
+	;mu: mean values			;--Red
+	mu: average values			;--mean native R3 function 
 	sigma: 0.0
 	foreach v values [sigma: sigma + ((v - mu) * (v - mu))]
-	either std [sqrt sigma / ((length? values) - 1)] [sigma / (length? values)]
+	sigma / (length? values)
+]
+
+deviation: function [
+	"Calculates the standard deviation of a series"
+	values [block! vector!] 
+	/bc	"Bessel's correction N - 1"
+][
+	;mu: mean values			;--Red
+	mu: average values		;--mean native R3 function 
+	sigma: 0.0
+	foreach v values [sigma: sigma + ((v - mu) * (v - mu))]
+	either bc [sqrt sigma / ((length? values) - 1)] [ sqrt sigma / (length? values)]
 ]
 
 
 mode: function [
-	"Calculates modal value of a serie. Must be improved"
+	"Calculates modal value of a series. Must be improved"
 	values [block! vector!]
 ][
 	sample: sort to block! copy values
@@ -64,8 +75,9 @@ zscore: function [
 	"Calculates zscore values"
 	values [block! vector!]
 ][
-	mu: mean values
-	std: variance/std values
+	;mu: mean values
+	mu: average values
+	std: deviation/bc values
 	b: []
 	foreach v values [append b (v - mu) /std]
 	b
@@ -73,22 +85,25 @@ zscore: function [
 ;--size in meters
 v: make vector! [decimal! 64 [1.62 1.72 1.64 1.7 1.78 1.64 1.65 1.64 1.66 1.74]]
 probe v
-print ["Type:    " v/type]
-print ["Size:   " v/size]		;--bit-size
-print ["Signed: " v/signed]		;--for integer
-print ["Length: " v/length]
-print ["Minimum: " v/minimum]
-print ["Maximum: " v/maximum]
-print ["Range:   " v/maximum - v/minimum]
-print ["Sum:     " sum v]
-print ["Mean:    " mean v]
-print ["Median:  " median v]
-print ["Mode:    " mode v]
-print ["Variance:" variance v]
-print ["STD:     " variance/std v]
+print-horizontal-line
+print ["Type:     " v/type]		;--type 
+print ["Size:     " v/size]		;--bit-size
+print ["Signed:   " v/signed]	;--for integer
+print ["Length:   " v/length]
+print ["Minimum:  " v/minimum]
+print ["Maximum:  " v/maximum]
+print ["Range:    " v/maximum - v/minimum]
+print ["Sum:      " sum v]
+print ["Mean:     " mean v]
+print ["Median:   " median v]
+print ["Mode:     " mode v]
+print ["Variance: " variance v]
+print ["Deviation:" deviation v]
+print ["Deviation:" deviation/bc v]
 
-
+print-horizontal-line
 v: make vector! [decimal! 64 [0 1 2 3 4 5 6 7 8 9 10]]
 print v
-print ["Mean:    " mean v]
+print ["Mean:    " average v]
 print ["Zscore: " zscore v]
+print-horizontal-line
