@@ -4,7 +4,7 @@ REBOL [
 ]
 
 ;--2 useful functions in R3: sum and average (for blocks). Only sum for Red
-mean: function [
+mean: func [
 	"Calculates the mean value of a series"
 	values [block! vector!] 
 ][
@@ -14,7 +14,7 @@ mean: function [
 ]
 
 ;--median adapted from @hiiamboris
-median: function [
+median: func [
 	"Returns the sample median"
 	values [block! vector!]
 ][
@@ -28,37 +28,39 @@ median: function [
     ]
 ]
 
-variance: function [
+variance: func [
 	"Calculates the variance of a series"
 	values [block! vector!] 
 ][
 	;mu: mean values			;--Red
-	mu: average values			;--mean native R3 function 
+	mu: average values			;--mean native R3 func 
 	sigma: 0.0
 	foreach v values [sigma: sigma + ((v - mu) * (v - mu))]
 	sigma / (length? values)
 ]
 
-deviation: function [
+deviation: func [
 	"Calculates the standard deviation of a series"
 	values [block! vector!] 
-	/bc	"Bessel's correction N - 1"
+	/population-sd
+	/sample-sd 	
 ][
 	;mu: mean values			;--Red
-	mu: average values		;--mean native R3 function 
+	mu: average values			;--mean native R3 func 
 	sigma: 0.0
 	foreach v values [sigma: sigma + ((v - mu) * (v - mu))]
-	either bc [sqrt sigma / ((length? values) - 1)] [ sqrt sigma / (length? values)]
+	if population-sd [return sqrt sigma / (length? values)]
+	if sample-sd [return sqrt sigma / ((length? values) - 1)]
 ]
 
 
-mode: function [
+mode: func [
 	"Calculates modal value of a series. Must be improved"
 	values [block! vector!]
 ][
 	sample: sort to block! copy values
 	n: length? sample
-	counter: make map!
+	counter: []
 	i: count: 1
 	key2: sample/(i + 1)	
 	while [not none? key2] [
@@ -68,16 +70,16 @@ mode: function [
 			[append/only counter reduce [count key1] count: 1] 	;--new entry with count = 1
 		++ i
 	]
-	fourth to block! counter
+	second last sort counter
 ]
 
-zscore: function [
+zscore: func [
 	"Calculates zscore values"
 	values [block! vector!]
 ][
 	;mu: mean values
 	mu: average values
-	std: deviation/bc values
+	std: deviation/sample-sd values
 	b: []
 	foreach v values [append b (v - mu) /std]
 	b
@@ -86,24 +88,23 @@ zscore: function [
 v: make vector! [decimal! 64 [1.62 1.72 1.64 1.7 1.78 1.64 1.65 1.64 1.66 1.74]]
 probe v
 print-horizontal-line
-print ["Type:     " v/type]		;--type 
-print ["Size:     " v/size]		;--bit-size
-print ["Signed:   " v/signed]	;--for integer
-print ["Length:   " v/length]
-print ["Minimum:  " v/minimum]
-print ["Maximum:  " v/maximum]
-print ["Range:    " v/maximum - v/minimum]
+print ["Length:   " length? v]
+print ["Minimum:  " mini: first find-min v]
+print ["Maximum:  " maxi: first find-max v]
+print ["Range:    " maxi - mini]
 print ["Sum:      " sum v]
 print ["Mean:     " mean v]
 print ["Median:   " median v]
 print ["Mode:     " mode v]
-print ["Variance: " variance v]
-print ["Deviation:" deviation v]
-print ["Deviation:" deviation/bc v]
+print ["Variance: " round/to variance v 0.001]
+print ["Deviation:" round/to deviation/population-sd v 0.001]
+print ["Deviation:" round/to deviation/sample-sd v 0.001]
 
 print-horizontal-line
 v: make vector! [decimal! 64 [0 1 2 3 4 5 6 7 8 9 10]]
 print v
-print ["Mean:    " average v]
+print ["Mean:   " average v]
 print ["Zscore: " zscore v]
+print ["Mean:   " mean zscore v]
+print ["STD:    " round/to deviation/sample-sd zscore v 0.01]
 print-horizontal-line
