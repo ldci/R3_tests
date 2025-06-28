@@ -35,7 +35,7 @@ variance: func [
 	;mu: mean values			;--Red
 	mu: average values			;--mean native R3 func 
 	sigma: 0.0
-	foreach v values [sigma: sigma + ((v - mu) * (v - mu))]
+	foreach v values [sigma: sigma + (v - mu ** 2)]
 	sigma / (length? values)
 ]
 
@@ -48,14 +48,14 @@ deviation: func [
 	;mu: mean values			;--Red
 	mu: average values			;--mean native R3 func 
 	sigma: 0.0
-	foreach v values [sigma: sigma + ((v - mu) * (v - mu))]
+	foreach v values [sigma: sigma + (v - mu ** 2)]
 	if population-sd [return sqrt sigma / (length? values)]
 	if sample-sd [return sqrt sigma / ((length? values) - 1)]
 ]
 
 
 mode: func [
-	"Calculates modal value of a series. Must be improved"
+	"Calculates modal value of a series. Must be improved for bi or multi modal"
 	values [block! vector!]
 ][
 	sample: sort to block! copy values
@@ -66,9 +66,9 @@ mode: func [
 	while [not none? key2] [
 		key1: sample/(i) key2: sample/(i + 1)					;--test keys
 		either key1 == key2 
-			[++ count]										;--increment count
+			[count: count + 1]											;--increment count
 			[append/only counter reduce [count key1] count: 1] 	;--new entry with count = 1
-		++ i
+		i: i + 1 ;-- ++ i
 	]
 	second last sort counter
 ]
@@ -81,7 +81,7 @@ zscore: func [
 	mu: average values
 	std: deviation/sample-sd values
 	b: []
-	foreach v values [append b (v - mu) /std]
+	foreach v values [append b round/to (v - mu) / std 0.001]
 	b
 ]
 ;--size in meters
@@ -101,10 +101,12 @@ print ["Deviation:" round/to deviation/population-sd v 0.001]
 print ["Deviation:" round/to deviation/sample-sd v 0.001]
 
 print-horizontal-line
-v: make vector! [decimal! 64 [0 1 2 3 4 5 6 7 8 9 10]]
+v: make vector! [decimal! 32 [0 1 2 3 4 5 6 7 8 9 10]]
 print v
 print ["Mean:   " average v]
-print ["Zscore: " zscore v]
-print ["Mean:   " mean zscore v]
-print ["STD:    " round/to deviation/sample-sd zscore v 0.01]
+print-horizontal-line
+print "Z-score test"
+print ["Z-score: " zscore v]
+print ["Mean:    " round mean zscore v]
+print ["STD:     " round deviation/sample-sd zscore v]
 print-horizontal-line
