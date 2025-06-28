@@ -16,6 +16,6 @@ with cv [
 			value
 		]
 	]   
-	print "A key to quit"		;--flip tests
+	print "A key to quit"
 	waitKey 0
 ]
