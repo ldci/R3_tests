@@ -3,9 +3,6 @@ REBOL [
 	author: @ldci
 ] 
 
-b2d: import 'blend2d ;--use blend2d (draw module)
-cv:  import 'opencv
-
 {This code is based on Back-Propagation Neural Networks 
 by Neil Schemenauer <nas@arctrix.com>
 Thanks to  Karl Lewin for the first Rebol 2 version}
@@ -62,18 +59,18 @@ computeMatrices: func [inputs [block!] /standard /sigmoidal] [
 	repeat i (nInput - 1) [poke aInput i to decimal! inputs/:i]
 	; hidden activations
 	repeat j nHidden [
-		sum: 0.0
-		repeat i nInput [sum: sum + (aInput/:i * wInput/:i/:j)]
-		if standard  [poke aHidden j 1 / (1 + EXP negate sum)]
-		if sigmoidal [poke aHidden j sigmoid sum] 
+		sigma: 0.0
+		repeat i nInput [sigma: sigma + (aInput/:i * wInput/:i/:j)]
+		if standard  [poke aHidden j 1 / (1 + exp negate sigma)]
+		if sigmoidal [poke aHidden j sigmoid sigma] 
 	]
 	; output activations
 	repeat j nOutput [
-		sum: 0.0
+		sigma: 0.0
 		repeat i nHidden [
-		sum: sum + (aHidden/:i * wOutput/:i/:j)]
-		if standard  [poke aOutput j 1 / (1 + EXP negate sum)]
-		if sigmoidal [poke aOutput j sigmoid sum]
+		sigma: sigma + (aHidden/:i * wOutput/:i/:j)]
+		if standard  [poke aOutput j 1 / (1 + exp negate sigma)]
+		if sigmoidal [poke aOutput j sigmoid sigma]
 	]
 	aOutput
 ]
@@ -82,10 +79,10 @@ backPropagation: func [targets [block!] lr [number!] mf [number!] /standard /sig
 [
 	; calculate error terms for output
 	oDeltas: make1DMatrix  nOutput 0.0
-	sum: 0.0
+	sigma: 0.0
 	repeat k nOutput [
-		if sigmoidal [sum: targets/:k - aOutput/:k 
-						poke oDeltas k (dsigmoid aOutput/:k) * sum
+		if sigmoidal [sigma: targets/:k - aOutput/:k 
+						poke oDeltas k (dsigmoid aOutput/:k) * sigma
 					]
 		if standard [ao: aOutput/:k
 		poke oDeltas k ao * (1 - ao) * (targets/:k - ao)]
@@ -93,10 +90,10 @@ backPropagation: func [targets [block!] lr [number!] mf [number!] /standard /sig
 	; calculate error terms for hidden
 	hDeltas: make1DMatrix  nHidden 0.0
 	repeat j nHidden [
-		sum: 0.0
-		repeat k nOutput [sum: sum + (oDeltas/:k * wOutput/:j/:k)]
-		if sigmoidal [poke hDeltas j (dsigmoid aHidden/:j) * sum]
-		if standard [poke hDeltas j (aHidden/:j * (1 - aHidden/:j) * sum)]
+		sigma: 0.0
+		repeat k nOutput [sigma: sigma + (oDeltas/:k * wOutput/:j/:k)]
+		if sigmoidal [poke hDeltas j (dsigmoid aHidden/:j) * sigma]
+		if standard [poke hDeltas j (aHidden/:j * (1 - aHidden/:j) * sigma)]
 	]
 	; update output weights
 	repeat j nHidden [
@@ -121,12 +118,15 @@ backPropagation: func [targets [block!] lr [number!] mf [number!] /standard /sig
 ]
 
 ;*************************** Main Program *************************
+b2d: import 'blend2d 	;--use blend2d (draw module)
+cv:  import 'opencv		;--for visualisation
 
 changePattern: func [v1 v2 v3 v4][
- 	change second first pattern  v1 
-	change second second pattern v2 
-	change second third pattern  v3 
-	change second fourth pattern v4
+	change pattern/1/2 v1
+	change pattern/2/2 v2
+	change pattern/3/2 v3
+	change pattern/4/2 v4
+	expected: ajoin [pattern/1/2 pattern/2/2 pattern/3/2 pattern/4/2]
 ]
 
 makeNetwork: func [ni [integer!] nh [integer!] no [integer!]] [
@@ -141,22 +141,27 @@ trainNetwork: func [pattern[block!] iterations [number!] lr [number!] mf [number
 ][
 	blk: copy []
 	count: 0
-	x: 10
-	learned?: 0
+	x: 5
+	;--for blend2 draw
 	plot: compose [
 		fill blue
 		font %NotoSans-Regular.ttf
 		text 250x20  18 "Back Propagation"
-		text 52x230  12 "60"
-		text 112x230 12 "120"
-		text 172x230 12 "180"
-		text 232x230 12 "240"
-		text 292x230 12 "300"
-		text 352x230 12 "360"
-		text 412x230 12 "420"
-		text 472x230 12 "480"
-		text 532x230 12 "540"
-		text 592x230 12 "600"
+		text 280x40 18 op
+		text 335x40 18 expected
+		text 52x245  12 "60"
+		text 112x245 12 "120"
+		text 172x245 12 "180"
+		text 232x245 12 "240"
+		text 292x245 12 "300"
+		text 352x245 12 "360"
+		text 412x245 12 "420"
+		text 472x245 12 "480"
+		text 532x245 12 "540"
+		text 592x245 12 "600"
+		text 662x10  12 "1.0"
+		text 662x125 12 "0.5"
+		text 662x230 12 "0.0"
 		line-width 1 pen red 
 		line 0x230 660x230 line 0x120 660x120 line 1x0 1x230 
 		line 60x0 60x230 line 120x0 120x230 line 180x0 180x230
@@ -166,42 +171,31 @@ trainNetwork: func [pattern[block!] iterations [number!] lr [number!] mf [number
 		pen green
 	]
 	
-	
 	repeat i iterations [
 		error: 0.0
+		clear calculated
 		foreach p pattern [
 			either sigmoid? [r: computeMatrices/sigmoidal p/1 
 							error: error + backPropagation/sigmoidal p/2 lr mf]
 						    [r: computeMatrices/standard p/1 
 						    error: error + backPropagation/standard p/2 lr mf]
 			append blk error
-			count: count + 1
+			append calculated form to integer! round/half-ceiling r/1
+			either expected = calculated [isLearned?: true] [isLearned?: false]
+			++ count
 		]
 		if (mod count step) = 0 [
-				y: to integer! 230 - (error * 320)
-				if x = 10 [append plot reduce['line (as-pair x y)]]
-				append plot (as-pair x y)
-				++ x	
+			y: to integer! 230 - (error * 230)	;--scale error values in y
+			if x = 5 [append plot reduce['line as-pair x y]];--starting point for line
+			append plot as-pair x y	;--then just add coordinates
+			++ x	
 		]
 	]
-	append plot reduce ['text 270x40 12 form error]
+	append plot reduce ['text 270x60 12 form error]
 	img: draw imgSize :plot
 	blk
 ]
 
-;XOR [changePattern 0 1 1 0]
-;AND [changePattern 0 0 0 1] 
-;OR  [changePattern 0 1 1 1]
-;NOR [changePattern 1 0 0 0]
-;NAND[changePattern 1 1 1 0]
-
-;XOR by default pattern
-pattern: [
-	[[0 0] [0]]
-	[[1 0] [1]]
-	[[0 1] [1]]
-	[[1 1] [0]]
-]
 ;--default number of input, hidden, and output nodes
 nInput: 		2
 nHidden: 		3
@@ -217,20 +211,45 @@ wOutput: 		[]
 cInput: 		[]
 cOutput: 		[]
 sigmoid?: 		true
-imgSize: 		660x240
-threshold:		0.05
-lr: 0.5			; learning rate 
-mf: 0.1			; momentum factor
-;data: [160 320 640 1280 2560]
-n: 			640	; n training sample
-step: 		1;
+imgSize: 		680x250
+lr: 0.5			;--learning rate 
+mf: 0.1			;--momentum factor
+n: 				640	; n training sample [160 320 480 640 800 960]
+step: 			1
+isLearned?: 		false
+calculated: 	copy ""
 
+pattern: [
+	[[0 0] [0]]
+	[[0 1] [0]]
+	[[1 0] [0]]
+	[[1 1] [0]]
+]	
 
-changePattern 0 1 1 0
-makeNetwork 2 3 1  
-b: trainNetwork pattern n lr mf
-v: last b
-either (v <= threshold) [print as-yellow "Learning is OK!"][print as-red "No learning"]
+ops: ["AND" "NAND" "OR" "XOR" "NOR" "XNOR"]
+op: ops/1
+switch op [
+	"AND" 	[changePattern 0 0 0 1] ;--OK
+	"NAND"	[changePattern 1 1 1 0] ;--OK
+    "OR"  	[changePattern 0 1 1 1] ;--OK
+    "XOR" 	[changePattern 1 0 0 1]	;--OK
+    "NOR" 	[changePattern 1 0 0 0] ;--OK
+    "XNOR"	[changePattern 0 1 1 0]	;--OK
+]
+
+t: dt [ 
+	makeNetwork nInput nHidden nOutput ;--(2 3 1)  
+	b: trainNetwork pattern n lr mf
+]
+
+print ["Expected:" expected]
+print ["Result  :" calculated]
+print ["Duration:" round/to third t 0.01 "sec"]
+either isLearned? [print as-yellow "Learning is fine!"]
+				  [print as-red "No learning"]
+
 cv/imshow/name :img "Neural Network"
+cv/moveWindow "Neural Network"  200x10
 cv/waitKey 0
+
 
