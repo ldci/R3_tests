@@ -56,17 +56,17 @@ while [not tail? vec] [
 print ["Tail?   " tail? vec] 
 
 ;--unsupported by R3 vectors (but supported by R3 blocks)
-;clear
+;clear yes
 ;extract
 ;take
 ;remove
 ;select
 ;find
 ;sort
-;change
-;append
+;change yes
+;append yes
 ;repend
-;insert
+;insert yes
 
 
 
