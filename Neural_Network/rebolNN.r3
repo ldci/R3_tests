@@ -5,7 +5,9 @@ REBOL [
 
 {This code is based on Back-Propagation Neural Networks 
 by Neil Schemenauer <nas@arctrix.com>
-Thanks to  Karl Lewin for the first Rebol 2 version}
+Thanks to  Karl Lewin for the first Rebol 2 version (2003).
+Based on code I wrote in 2018 for Red (https://github.com/ldci/NeuralNetwork)
+This code uses simple blocks but could be updated for vectors}
 
 
 ;--Calculates a random number where: a <= rand < b
@@ -15,13 +17,14 @@ rand: function [a b [number!]
 ]
 
 ;--Make matrices
-make1DMatrix: function [mSize[integer!] value [number!] 
+make1DMatrix: function [mSize [integer!] value [number!] 
 ][
 	m: copy []
 	repeat i mSize [append m value]
 	m
 ]
-make2DMatrix: function [line [integer!] col [integer!] value [number!] 
+
+make2DMatrix: function [line col [integer!] value [number!] 
 ][
 	m: copy []
 	repeat i line [
@@ -38,8 +41,8 @@ sigmoid: function [x [number!]][tanh x]
 ;derivative of  sigmoid function
 dsigmoid: function [y [number!]][1.0 - y * y]
 
-randomizeMatrix: function [mat [block!] v1 [number!] v2 [number!]][
-	foreach elt mat [loop length? elt [elt: change/part elt rand v1 v2 1]]
+randomizeMatrix: function [mat [block!] v1 v2 [number!]][
+	foreach v mat [v: change/part v rand v1 v2 1]
 ]
 
 createMatrices: func [] [
@@ -75,7 +78,7 @@ computeMatrices: func [inputs [block!] /standard /sigmoidal] [
 	aOutput
 ]
 
-backPropagation: func [targets [block!] lr [number!] mf [number!] /standard /sigmoidal] 
+backPropagation: func [targets [block!] lr mf [number!] /standard /sigmoidal] 
 [
 	; calculate error terms for output
 	oDeltas: make1DMatrix  nOutput 0.0
@@ -98,17 +101,17 @@ backPropagation: func [targets [block!] lr [number!] mf [number!] /standard /sig
 	; update output weights
 	repeat j nHidden [
 		repeat k nOutput [
-			chnge: oDeltas/:k * aHidden/:j
-			poke wOutput/:j k (wOutput/:j/:k + (lr * chnge) + (mf * cOutput/:j/:k))
-			poke cOutput/:j k chnge
+			changed: oDeltas/:k * aHidden/:j
+			poke wOutput/:j k (wOutput/:j/:k + (lr * changed) + (mf * cOutput/:j/:k))
+			poke cOutput/:j k changed
 		]
 	]
 	; update hidden weights
 	repeat i nInput [
 		repeat j nHidden [
-			chnge: hDeltas/:j * aInput/:i
-			poke wInput/:i j (wInput/:i/:j + (lr * chnge) + (mf * cInput/:i/:j))
-			poke cInput/:i j chnge
+			changed: hDeltas/:j * aInput/:i
+			poke wInput/:i j (wInput/:i/:j + (lr * changed) + (mf * cInput/:i/:j))
+			poke cInput/:i j changed
 		]
 	]
 	; calculate error
@@ -121,7 +124,7 @@ backPropagation: func [targets [block!] lr [number!] mf [number!] /standard /sig
 b2d: import 'blend2d 	;--use blend2d (draw module)
 cv:  import 'opencv		;--for visualisation
 
-changePattern: func [v1 v2 v3 v4][
+changePattern: func [v1 v2 v3 v4 [number!]][
 	change pattern/1/2 v1
 	change pattern/2/2 v2
 	change pattern/3/2 v3
@@ -129,7 +132,7 @@ changePattern: func [v1 v2 v3 v4][
 	expected: ajoin [pattern/1/2 pattern/2/2 pattern/3/2 pattern/4/2]
 ]
 
-makeNetwork: func [ni [integer!] nh [integer!] no [integer!]] [
+makeNetwork: func [ni nh no [integer!]] [
 	random/seed now/time/precise
 	nInput: 		ni + 1;+1 for bias node
 	nHidden: 		nh
@@ -137,7 +140,7 @@ makeNetwork: func [ni [integer!] nh [integer!] no [integer!]] [
 	createMatrices
 ]
 
-trainNetwork: func [pattern[block!] iterations [number!] lr [number!] mf [number!]
+trainNetwork: func [pattern[block!] iterations lr mf [number!]
 ][
 	blk: copy []
 	count: 0
@@ -145,7 +148,8 @@ trainNetwork: func [pattern[block!] iterations [number!] lr [number!] mf [number
 	;--for blend2 draw
 	plot: compose [
 		fill blue
-		font %NotoSans-Regular.ttf
+		;font %NotoSans-Regular.ttf
+		font %/System/Library/Fonts/Geneva.ttf
 		text 250x20  18 "Back Propagation"
 		text 280x40 18 op
 		text 335x40 18 expected
@@ -159,9 +163,9 @@ trainNetwork: func [pattern[block!] iterations [number!] lr [number!] mf [number
 		text 472x245 12 "480"
 		text 532x245 12 "540"
 		text 592x245 12 "600"
-		text 662x10  12 "1.0"
-		text 662x125 12 "0.5"
-		text 662x230 12 "0.0"
+		text 661x10  12 "1.0"
+		text 661x125 12 "0.5"
+		text 661x230 12 "0.0"
 		line-width 1 pen red 
 		line 0x230 660x230 line 0x120 660x120 line 1x0 1x230 
 		line 60x0 60x230 line 120x0 120x230 line 180x0 180x230
@@ -184,14 +188,16 @@ trainNetwork: func [pattern[block!] iterations [number!] lr [number!] mf [number
 			either expected = calculated [isLearned?: true] [isLearned?: false]
 			++ count
 		]
-		if (mod count step) = 0 [
+		if zero? count % step [
 			y: to integer! 230 - (error * 230)	;--scale error values in y
 			if x = 5 [append plot reduce['line as-pair x y]];--starting point for line
 			append plot as-pair x y	;--then just add coordinates
 			++ x	
 		]
 	]
-	append plot reduce ['text 270x60 12 form error]
+	append plot reduce ['text 250x60 12 form error]
+	either isLearned? [append plot reduce ['text 280x80 12 "Learning is fine!"]]
+	[append plot reduce ['text 280x80 12 "No learning"]]
 	img: draw imgSize :plot
 	blk
 ]
@@ -216,7 +222,7 @@ lr: 0.5			;--learning rate
 mf: 0.1			;--momentum factor
 n: 				640	; n training sample [160 320 480 640 800 960]
 step: 			1
-isLearned?: 		false
+isLearned?: 	false
 calculated: 	copy ""
 
 pattern: [
@@ -227,7 +233,7 @@ pattern: [
 ]	
 
 ops: ["AND" "NAND" "OR" "XOR" "NOR" "XNOR"]
-op: ops/1
+op: ops/1	;--select what you want (1-6)
 switch op [
 	"AND" 	[changePattern 0 0 0 1] ;--OK
 	"NAND"	[changePattern 1 1 1 0] ;--OK
@@ -239,17 +245,14 @@ switch op [
 
 t: dt [ 
 	makeNetwork nInput nHidden nOutput ;--(2 3 1)  
-	b: trainNetwork pattern n lr mf
+	trainNetwork pattern n lr mf
 ]
 
 print ["Expected:" expected]
 print ["Result  :" calculated]
 print ["Duration:" round/to third t 0.01 "sec"]
-either isLearned? [print as-yellow "Learning is fine!"]
-				  [print as-red "No learning"]
-
 cv/imshow/name :img "Neural Network"
-cv/moveWindow "Neural Network"  200x10
+cv/moveWindow "Neural Network"  300x10
 cv/waitKey 0
 
 
