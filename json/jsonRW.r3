@@ -23,7 +23,7 @@ print to-json to-map blk
 ;save %test.json m
 
 ;--Arrays in objects
-m: #[name "John" age: 50 cars ["Ford" "BMW" "Fiat"]]
+m: #[name "John" age: 50 city "New-York" cars ["Ford" "BMW" "Fiat"]]
 probe m
 print to-json m
 ;save %test.json m

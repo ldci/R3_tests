@@ -1,6 +1,5 @@
 #!/usr/local/bin/r3
 REBOL [ 
-	needs: 3.18.1
 ]
 
 b2d: import 'blend2d ;--use blend2d (draw module)
@@ -11,35 +10,35 @@ img2: make image! reduce [imgSize black]
 img3: make image! reduce [imgSize black]
 xStep: 0.1		;--for signal frequency
 xRound: 0.5		;--for rounding
-noise?: yes		;--add noise?
 opencv?: yes	;--use opencv extension?
 if opencv? [cv: import opencv]
 
-generateSignal: func [
+generateSignal: function [
 	"Generate a signal with or whithout noise"
 	deltaT	[decimal!]	;--x step
 	sSize	[integer!]	;--vector size
+	noise?	[logic!]
 ][
 	t1: 2.5 t2: 6.5
-	t: make vector! compose [decimal! 64 (sSize)]
-	signal: make vector! compose [decimal! 64 (sSize)]
+	t: make vector! [f64! :sSize]
 	repeat i sSize [t/:i: (i - 1) * deltaT]
+	signal: make vector! [f64! :sSize]
 	repeat i sSize [
-		ca: cos (2.5 * pi / t1 * t/:i)
-		sa: sin (2.5 * pi / t2 * t/:i)
-		either noise? [signal/:i: 2.5 * sa + ca][signal/:i: 2.5 * sa]
+		ca: cos (t1 * pi / t1 * t/:i)
+		sa: sin (t1 * pi / t2 * t/:i)
+		either noise? [signal/:i: t1 * sa + ca][signal/:i: t1 * sa]
 	]
 	signal
 ]
 
-rcvTSdifferentiate: func [
-	"Calculate the first derivative of the signal"
+rcvTSdifferentiate: function [
+	"Calculate the first derivative of the signal. From redCV"
 	signal	[vector!]	;--float vector
 	deltaT	[decimal!]	;--x step
 	factor	[decimal!]	;--for rounding (0.5 by default)		
 ][
-	n: length? signal
-	filter: make vector! compose [decimal! 64 (n)]
+	n: signal/length
+	filter: make vector! [f64! :n]
 	i: 2
 	while [i < n] [
 		y-: signal/(i - 1) y: signal/:i y+: signal/(i + 1)
@@ -53,56 +52,57 @@ rcvTSdifferentiate: func [
 	filter
 ]
 
-getExtrema: func [
-	"Get extrama values in signal"
+getExtrema: function [
+	"Get extrema values in signal as a block"
 	signal		[vector!]	;--original signal
 	derivate	[vector!]	;--first derivate 	
 	step		[decimal!]	;--for x scale
-][
-	extrema: copy []
+][	
+	extrema: copy []	;--a block for storing pairs
 	i: 1
 	forall derivate [
-		;--find derivate inflexion
-		if (round derivate/1) = 0.0 [
+		;--find derivate inflexion (0.0)
+		if zero? round derivate/1 [
 			y: signal/:i
-			y: pick [125 5] (sign? y) = 1
-			append extrema as-pair i + (1 / step) y 
+			y: pick [125 5] (sign? y) = 1 ;-- 1 or -1
+			append extrema as-pair i + (1 / step) y
 		]
 		++ i
 	]
 	extrema
 ]
 
-generateImage: func [
+
+showExtrema: function [
+	b		[block!]
+	img 	[image!]
+	color 	[tuple!]
+][
+	;--blend2d commands
+	code: copy [pen color line-width 1 line]
+	repeat i length? b [append code b/:i + 3x0]
+	draw img :code
+	img
+]
+
+generateImage: function [
 	v 		[vector!] 
 	img 	[image!] 
 	scale 	[decimal!] 
 	color 	[tuple!]
 ][
 	;--blend2d commands
-	code: copy [pen color line-width 1 line]	
+	code: copy [pen color line-width 1 line 0x64 1024x64 line]	
 	repeat i v/length [append code as-pair i 64 - (v/:i * scale)]
-	draw img :code
-	img
-]
-
-showExtrema: func [
-	b		[block!]
-	img 	[image!]
-	color 	[tuple!]
-][
-	;--blend2d commands
-	code: copy [pen color line-width 2 line]
-	repeat i length? b [append code b/:i + 3x0]
 	draw img :code
 	img
 ]
 
 ;********************** Main Program ************************
 
-x1: generateSignal xStep sSize
-x2: rcvTSdifferentiate x1 xStep	xRound
-x3: getExtrema x1 x2 xStep
+x1: generateSignal xStep sSize yes		;--signal with noise
+x2: rcvTSdifferentiate x1 xStep	xRound	;--differentiate signal
+x3: getExtrema x1 x2 xStep				;--get extrema as a block
 
 generateImage x1 img1 10.0 red
 generateImage x2 img2 10.0 gold
