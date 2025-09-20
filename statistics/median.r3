@@ -19,6 +19,7 @@ plusM: minusM: 0
 foreach v v2 [either v > median [plusM: plusM + 1] [minusM: minusM + 1]]
 append/only data reduce [plusM minusM 0]
 
+
 append/only data [0 0 0]		;--for lines sums
 
 ;--Calculates marginal sums
