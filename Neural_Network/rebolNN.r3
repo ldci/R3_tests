@@ -167,11 +167,16 @@ trainNetwork: func [pattern[block!] iterations lr mf [number!]
 		text 661x125 12 "0.5"
 		text 661x230 12 "0.0"
 		line-width 1 pen red 
-		line 0x230 660x230 line 0x120 660x120 line 1x0 1x230 
+		line 0x1 660x1		;--top line
+		line 0x230 660x230 	;--bottom line
+		line 0x120 660x120 	;--middle line
+		line 1x0 1x230		;--left scale 
+		line 660x0 660x230	;--left scale
 		line 60x0 60x230 line 120x0 120x230 line 180x0 180x230
 		line 240x0 240x230 line 300x0 300x230 line 360x0 360x230
 		line 420x0 420x230 line 480x0 480x230 line 540x0 540x230
-		line 600x0 600x230 line 660x0 660x230
+		line 600x0 600x230 
+		line-width 2
 		pen green
 	]
 	
@@ -220,7 +225,7 @@ sigmoid?: 		true
 imgSize: 		680x250
 lr: 0.5			;--learning rate 
 mf: 0.1			;--momentum factor
-n: 				640	; n training sample [160 320 480 640 800 960]
+n: 				640	;--n training sample [160 320 480 640 800 960]
 step: 			1
 isLearned?: 	false
 calculated: 	copy ""
@@ -250,7 +255,8 @@ t: dt [
 
 print ["Expected:" expected]
 print ["Result  :" calculated]
-print ["Duration:" round/to third t 0.01 "sec"]
+;print ["Duration:" round/to third t 0.01 "sec"]
+print ["Duration:" round (third t) * 1000 "msec"]
 cv/imshow/name :img "Neural Network"
 cv/moveWindow "Neural Network"  300x10
 cv/waitKey 0
