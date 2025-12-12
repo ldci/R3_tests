@@ -1,0 +1,50 @@
+AUDIO is a module with:
+SPEC:
+  version         tuple!     0.11.21.0
+  title           string!    "Rebol MiniAudio Extension"
+  name            word!      miniaudio
+  type            word!      module
+  date            date!      24-Jun-2024/0:56:35
+  author          word!      Oldes
+  options         block!     length: 1 [extension]
+  License         word!      MIT
+  Url             url!       https://github.com/Oldes/Rebol-MiniAudio
+
+BODY:
+  lib-base        handle!    #(handle! extension)
+  lib-file        file!      %/Users/fjouen/.rebol/modules/miniaudio.rebx
+  lib-local       object!    []
+  words           none!      none
+  get-devices     command!   Retrive playback/capture device names
+  init-playback   command!   Initialize a playback device
+  load            command!   Loads a file and returns sound's handle
+  play            command!   Loads a file (if not already loaded) and ...
+  pause           command!   Pause sound playback
+  start           command!   Start sound or device playback
+  stop            command!   Stop sound or device playback
+  fade            command!   Fade sound volume
+  seek            command!   Seek to specified position
+  make-noise-node command!   Creates a noise node for generating rando...
+  make-waveform-node command!   Creates a sound waveform node
+  make-delay-node command!   Creates a delay (echo) sound node
+  make-group-node command!   Creates a sound group node
+  volume          command!   Set the volume
+  volume?         command!   Get the volume
+  pan             command!   Set the pan
+  pan?            command!   Get the pan
+  pitch           command!   Set the pitch
+  pitch?          command!   Get the pitch
+  looping         command!   Set the looping
+  looping?        command!   Get the looping
+  end?            command!   Return true if sound ended
+  type_sine       integer!   0
+  type_square     integer!   1
+  type_triangle   integer!   2
+  type_sawtooth   integer!   3
+  format_u8       integer!   1
+  format_s16      integer!   2
+  format_s24      integer!   3
+  format_s32      integer!   4
+  format_f32      integer!   5
+  white-noise     function!  []
+
