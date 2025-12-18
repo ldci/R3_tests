@@ -14,7 +14,6 @@ process: does [
 	cv/moveWindow win 350x0
 ]
 
-
 loadImage: does [
 	isloaded?: false
 	fileName: request-file/title/filter "Select an image" [%jpg %jpeg %png]
@@ -25,19 +24,23 @@ loadImage: does [
 	]
 ]
 
+showSource: does [
+	if isloaded? [
+		im: b2d/image fileName	;--as RGB image
+		process
+	]
+]
+
 convert: func [f [file!] /HSV /GS][
-	img: cv/imread f									;--source image
-	if HSV [							
-		hsv: cv/cvtColor :img none cv/COLOR_RGB2HSV		;--HSV image
-		cv/imwrite %temp.jpg hsv						;--use temporary file
+	img: cv/imread f										;--source image
+	case [
+		HSV [ima: cv/cvtColor :img none cv/COLOR_RGB2HSV]	;--HSV image
+		GS  [ima: cv/cvtColor :img none cv/COLOR_RGB2GRAY]	;--grayscale image
 	]
-	if GS [
-		gre: cv/cvtColor :img none cv/COLOR_RGB2GRAY	;--grayscale image
-		cv/imwrite %temp.jpg gre						;--use temporary file
-	]
-	im: b2d/image %temp.jpg								;--update b2d image
-	delete %temp.jpg									;--delete temporary file
-	process												;--update view
+	cv/imwrite %temp.jpg ima								;--use temporary file
+	im: b2d/image %temp.jpg									;--update b2d image
+	delete %temp.jpg										;--delete temporary file
+	process													;--update view
 ]
 
 ;--OpenCV mouse callback in context
@@ -54,7 +57,8 @@ ctx: context [
         		if all [pos > 0x0 pos < 80x20] [loadImage]								;--button 1
         		if all [pos > 80x0 pos < 160x20][if isloaded? [convert/GS fileName]]	;--button 2
         		if all [pos > 160x0 pos < 240x20][if isloaded? [convert/HSV fileName]]	;--button 3
-        		if all [pos > 240x0 pos < 320x20][quit]									;--button 4
+        		if all [pos > 240x0 pos < 320x20][showSource]									;--button 4
+        		if all [pos > 320x0 pos < 400x20][quit]									;--button 5
         	]
         ]
     ]
@@ -69,11 +73,13 @@ code: [
 	box 80x0 80x20 8
 	box 160x0 80x20 8
 	box 240x0 80x20 8
+	box 320x0 80x20 8
 	fill-pen white
 	text 25x15   14 "Load"
 	text 90x15   14 "Grayscale"
 	text 185x15  14 "HSV"
-	text 265x15  14 "Quit"
+	text 260x15  14 "Source"
+	text 345x15  14 "Quit"
 	image :im 40x40 400x400
 ]
 
