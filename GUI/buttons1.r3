@@ -4,7 +4,7 @@ REBOL [
 b2d: import 'blend2d 	;--use blend2d (draw module)
 cv:  import 'opencv		;--for visualisation
 fileName: none
-win: "GUI Buttons Test"
+win: "GUI Buttons Test 1"
 
 loadImage: does [
 	cv/destroyWindow "HSV"
@@ -48,9 +48,9 @@ code: [
 	font %/System/Library/Fonts/Geneva.ttf
 	fill-pen black
 	pen white
-	box 0x0 80x20 10
-	box 80x0 80x20 10
-	box 160x0 80x20 10
+	box 0x0 80x20 8
+	box 80x0 80x20 8
+	box 160x0 80x20 8
 	fill-pen white
 	text 20x15   14 "Load"
 	text 95x15   14 "to HSV"
