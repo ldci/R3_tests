@@ -20,12 +20,12 @@ ctx: context [
     	pos: mcb/pos
     	if flags = 1 [
     		case [
-    			all [pos/x > 10 pos/y > 10 pos/y < 25]  [code/41: "Item 1 selectionned"]
-    			all [pos/x > 10 pos/y > 25 pos/y < 50]  [code/41: "Item 2 selectionned"]
-    			all [pos/x > 10 pos/y > 50 pos/y < 75]  [code/41: "Item 3 selectionned"]
-    			all [pos/x > 10 pos/y > 75 pos/y < 100] [code/41: "Item 4 selectionned"]
-    			all [pos/x > 10 pos/y > 100 pos/y < 125][code/41: "Item 5 selectionned"]
-    			all [pos/x > 10 pos/y > 125 pos/y < 150][code/41: "Item 6 selectionned"]
+    			all [pos/x > 10 pos/y > 10 pos/y < 25]  [code/41: "Item 1 selected"]
+    			all [pos/x > 10 pos/y > 25 pos/y < 50]  [code/41: "Item 2 selected"]
+    			all [pos/x > 10 pos/y > 50 pos/y < 75]  [code/41: "Item 3 selected"]
+    			all [pos/x > 10 pos/y > 75 pos/y < 100] [code/41: "Item 4 selected"]
+    			all [pos/x > 10 pos/y > 100 pos/y < 125][code/41: "Item 5 selected"]
+    			all [pos/x > 10 pos/y > 125 pos/y < 150][code/41: "Item 6 selected"]
     		]
     	showImage
     	]
@@ -47,7 +47,7 @@ code: [
 	text 15x100 14 "Item 4"
 	text 15x125 14 "Item 5"
 	text 15x150 14 "Item 6"
-	text 120x80 16 "Select an Item"
+	text 120x85 24 "Select an Item"
 ]
 ;repeat i (length? code) [print [i code/:i]]
 
