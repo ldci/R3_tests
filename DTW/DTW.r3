@@ -122,22 +122,25 @@ dtw: function [
 ; === USAGE EXAMPLE ===
 x: [9 3 1 5 1 2 0 1 0 2 2 8 1 7 0 6 4 4 5]
 y: [9 3 1 5 1 2 0 1 0 2 2 8 1 7 0 6 4 4 5]
-
 ;--print ["DTW Distance:" dtw x y]
-
-; With warping path
+;--With warping path
 result: dtw/with-path x y
+print-horizontal-line
+prin "x == y "
 print ["DTW Distance:" result/1]		;--must be = 0.0
 print ["Warping Path:" mold result/2]
+print-horizontal-line
 
 x: [9 3 1 5 1 2 0 1 0 2 2 8 1 7 0 6 4 4 5]
 y: [1 0 5 5 0 1 0 1 0 3 3 2 8 1 0 6 4 4 5 8 9]
-
-
 result: dtw/with-path x y
-print ["DTW Distance:" result/1]		;--must be <> 0.0
+prin "x != y "
+print ["DTW Distance:" result/1]		;--must be > 0.0
 print ["Warping Path:" mold result/2]
+print-horizontal-line
+print "Any key to close"
 
+;--Optimal path visualisation
 imgSize: as-pair (length? x) (length? y)
 imgSize: imgSize * 10
 
